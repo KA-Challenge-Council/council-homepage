@@ -2838,13 +2838,18 @@
             };
 
             if (query != element.attributes.original.value.replace(/&/g, "&amp;")) {
-                if (type == "") {
+                if (type != "date") {
                     element.style = "background-color: rgba(255, 205, 0, 0.85)";
                 } else {
                     element.style = "color: rgb(255, 125, 0)";
+                    element.parentElement.childNodes[1].style = "color: rgb(255, 125, 0)";
                 };
             } else {
                 element.style = "";
+
+                if (type == "date") {
+                    element.parentElement.childNodes[1].style = "";
+                };
             };
         };
 
@@ -2856,6 +2861,12 @@
             // Set the dictionary items to the new content
             contests[i].link = element.innerHTML.split("/").slice(0, -1).join("/");
             contests[i].imageFile = element.innerHTML.split("/").slice(-1)[0];
+        };
+
+        // Convert the date from YYYY/MM/DD to MONTH DAY, YEAR
+        function dateConversion(date) {
+            date = new Date(date);
+            return date.toLocaleString('default', { month: 'long' }) + " " + date.getDate() + ", " + date.getFullYear();
         };
 
         // Adds contests to the contests board
@@ -2872,6 +2883,8 @@
                         current = "";
                     };
 
+                    deadline = contests[i].deadline;
+                    deadlineFormatted = dateConversion(contests[i].deadline);
                     heading = contests[i].title;
                     description = contests[i].description.replace(/<p>/g, '').replace(/<\/p>/g, '<br><br>');
                     image = contests[i].link + "/" + contests[i].imageFile;
@@ -2935,11 +2948,20 @@
                     divTag.appendChild(h3Tag);
 
                     pTag = document.createElement("p");
-                    pTag.innerHTML = "All projects must be submitted by <br><input type=\"date\" original=\"" + contests[i].deadline +"\" value=\"" + contests[i].deadline +"\" oninput=\"checkChanges(this); contests[" + i + "].deadline = this.value\">";
+                    pTag.innerHTML = "All projects must be submitted by <span>" + deadlineFormatted + "</span>.<br><br>";
+
+                    dateTag = document.createElement("input");
+                    dateTag.id = "contest-content" + i + " deadline"
+                    dateTag.type = "date";
+                    dateTag.setAttribute("original", deadline);
+                    dateTag.setAttribute("oninput", "checkChanges(this); contests[" + i + "].deadline = this.value; this.parentElement.childNodes[1].innerHTML = dateConversion(this.value)")
+                    dateTag.setAttribute("value", deadline);
+                    pTag.appendChild(dateTag);
+
                     buttonTag = document.createElement("button");
-                    buttonTag.setAttribute("onclick", "this.parentNode.childNodes[2].value = this.parentNode.childNodes[2].attributes.original.value; this.parentNode.childNodes[2].style = ''");
+                    buttonTag.setAttribute("onclick", "date = document.getElementById(\"contest-content" + i + " deadline\"); date.value = date.attributes.original.value; document.getElementById(\"contest-content" + i + " deadline\").oninput()");
                     buttonTag.innerHTML = "Reset date";
-                    pTag.append(buttonTag);
+                    pTag.appendChild(buttonTag);
                     divTag.appendChild(pTag);
 
                     aTag = document.createElement("a");
