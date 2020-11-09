@@ -262,8 +262,8 @@
                 border: 1px solid #1865F2;
             }
 
-            .contest-box.current-contest::after {
-                content: "CURRENT CONTEST";
+            .current-contest-tag,
+            .previous-contest-tag {
                 font-size: 12px;
                 display: block;
                 border: 2px solid #1865F2;
@@ -275,12 +275,9 @@
                 color: #1865F2;
             }
 
-            .current-contest-tag {
-                border: 2px solid #76b221;
-                border-radius: 10px;
-                color: #76b221;
-                width: 70%;
-                margin: auto;
+            .previous-contest-tag {
+                border-color: #1865F277;
+                height: 14px;
             }
 
             .col1 {
@@ -506,7 +503,7 @@
     <body>
 
         <div class="content" style="padding-top:37px;">
-            <a href="#" onclick="displayContent('contests-content')"><h1 class="heading">Contests</h1></a>
+            <a href="#" onclick="displayContent('contests-content')"><h1 class="heading" style="color:white">Contests</h1></a>
         </div>
         <div id="contests-content" class="content">
             <div id="contest-board"></div>
@@ -2868,16 +2865,39 @@
             document.getElementById("contest-content" + i + " link").href = contests[i].link;
         };
 
+        // Toggle current/previous contest
+        function toggleType(element) {
+            if (element.parentElement.className.includes('current')) {
+                if (document.getElementsByClassName("current-contest").length == 2) {
+                    element.className = 'previous-contest-tag';
+                    element.children[0].style.display = "none";
+                    element.parentElement.className = element.parentElement.className.replace("current", "previous");
+                };
+            } else if (element.parentElement.className.includes('previous')) {
+                current = document.getElementsByClassName("current-contest")[0];
+                current.className = current.className.replace("current", "previous");
+                current = current.childNodes[5];
+                current.className = 'previous-contest-tag';
+                current.children[0].style.display = "none";
+
+                element.className = 'current-contest-tag';
+                element.children[0].style.display = "";
+                element.parentElement.className = element.parentElement.className.replace("previous", "current");
+            };
+        };
+
         function createContest(i) {
             if (contests[i].contestIsVisible == true) {
                 // Alternate columns
                 col = i%2+1;
 
                 // Set the most recent contest to be the current contest (if the deadline has not been reached)
-                if (i == 0 && new Date(contests[0].deadline).valueOf() > new Date().valueOf()) {
-                    current = " current-contest";
+                if (i == contests.length-1 && new Date(contests[i].deadline).valueOf() > new Date().valueOf()) {
+                    type = "current-contest";
+                    display = "";
                 } else {
-                    current = "";
+                    type = "previous-contest";
+                    display = "none";
                 };
 
                 deadline = contests[i].deadline;
@@ -2888,7 +2908,8 @@
 
                 // Create the contest box elements
                 divTag = document.createElement("div");
-                divTag.className = "contest-box col" + col + current;
+                divTag.id = "contest" + i
+                divTag.className = "contest-box col" + col + " " + type;
 
                 h4Tag = document.createElement("h4");
                 h4Tag.id = "contest" + i + " title"
@@ -2924,12 +2945,18 @@
                 buttonTag.innerHTML = "Reset link";
                 divTag.appendChild(buttonTag);
 
-                contestBoard.appendChild(divTag);
+                spanTag = document.createElement("span");
+                spanTag.className = type + "-tag";
+                spanTag.setAttribute("onclick", "toggleType(this)");
+                spanTag.innerHTML = "<span style=\"display:" + display + ";\">CURRENT CONTEST</span>";
+                divTag.appendChild(spanTag);
+
+                contestBoard.prepend(divTag);
 
                 // Create the contest content elements
 
                 containerTag = document.createElement("div");
-                containerTag.id = "contest" + i
+                containerTag.id = "contest-content" + i
                 containerTag.style = "display:none"
 
                 h1Tag = document.createElement("h1");
@@ -2983,12 +3010,11 @@
                 divTag.appendChild(aTag);
 
                 containerTag.appendChild(divTag);
-                box.appendChild(containerTag);
+                box.prepend(containerTag);
             };
         };
 
         // Adds contests to the contests board
-        contests = contests.reverse();
         function loadContestBoard() {
             for (var i = 0; i < contests.length; i++) {
                   createContest(i);
@@ -3003,7 +3029,7 @@
         }
 
         function showContest(i) {
-            document.getElementById("contest" + i).style.display = "";
+            document.getElementById("contest-content" + i).style.display = "";
 
             if (contests[i].resultsAreVisible == true) {
 
