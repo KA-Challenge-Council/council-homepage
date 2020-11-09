@@ -53,7 +53,6 @@
             }
 
             .content {
-                padding-top: 37px;
                 transition: transform 0.4s ease;
                 text-align: center;
                 color: white;
@@ -506,15 +505,15 @@
 
     <body>
 
+        <div class="content" style="padding-top:37px;">
+            <a href="#" onclick="displayContent('contests-content')"><h1 class="heading">Contests</h1></a>
+        </div>
         <div id="contests-content" class="content">
-            <h1 class="heading">Contests</h1>
-
-            <div id="contest-board">
-            </div>
+            <div id="contest-board"></div>
         </div>
 
         <!-- Holds the currently displayed contest -->
-        <div id="contest" class="content">
+        <div id="contest" class="content" style="display:none">
 
         </div>
 
@@ -2794,13 +2793,12 @@
     <script>
         function displayContent(currentPage, id) {
 
-            // Get array of all pages
-            var pages = document.getElementsByClassName("content");
-
-            // Hide all pages
-            for (var i = 0; i < pages.length; i++) {
-                pages[i].style.display = "none";
-            }
+            document.getElementById("contests-content").style.display = "none";
+            document.getElementById("contest").style.display = "none";
+            // Hide the contest content pages
+            for (var i = 0; i < document.getElementById("contest").children.length; i += 1) {
+                document.getElementById("contest").children[i].style.display = "none";
+            };
 
             //Get page selected
             var activePage = document.getElementById(currentPage);
@@ -2811,22 +2809,6 @@
             //Go back to top of page when a new page is displayed
             document.body.scrollTop = document.documentElement.scrollTop = 0;
 
-            // Set selected page
-            var tabs = document.getElementsByClassName("nav-option");
-
-            if (currentPage === "home-content" ||
-            currentPage === "contests-content" ||
-            currentPage === "members-content" ||
-            currentPage === "faq-content") {
-                for (var i = 0; i < tabs.length; i++)
-                {
-                    if (tabs[i].id === currentPage.split("-")[0]) {
-                        tabs[i].classList.add("nav-selected");
-                    } else {
-                        tabs[i].classList.remove("nav-selected");
-                    }
-                }
-            }
         }
 
         // Startup
@@ -2837,51 +2819,134 @@
     <!-- Populate contests page -->
     <script>
 
-        function checkChanges(e) {
-            if (e.innerHTML != e.attributes.original.value) {
-                e.style = 'background-color: rgba(255, 0, 0, 0.75)';
+        // Changes styling if an elements content is different from the original content
+        function checkChanges(element) {
+            if (element.innerHTML != element.attributes.original.value.replace(/&/g, "&amp;")) {
+                element.style = "background-color: rgba(255, 205, 0, 0.75)";
             } else {
-                e.style = 'background-color: rgba(255, 255, 255, 0.75)';
+                element.style = "";
             };
+        };
+
+        // Process the link and image objects on editing
+        function contestLink(element, i) {
+            // Set the image to the link
+            element.parentElement.children[2].src = element.innerHTML;
+
+            // Set the dictionary items to the new content
+            contests[i].link = element.innerHTML.split("/").slice(0, -1).join("/");
+            contests[i].imageFile = element.innerHTML.split("/").slice(-1)[0];
         };
 
         // Adds contests to the contests board
         function loadContestBoard() {
             var contestBoard = document.getElementById("contest-board");
-            contestBoard.innerHTML = ""; // Remove everything on board
+            var box = document.getElementById("contest");
 
-            var countAdded = 0;
             for (var i = 0; i < contests.length; i++) {
-
                 if (contests[i].contestIsVisible == true) {
                     // Alternate columns
-                    var col = 0;
-                    if (countAdded%2 == 0) {
-                        col = 1;
-                    } else {
-                        col = 2;
-                    }
+                    col = i%2+1;
 
-                    if (i == 0) {
-                        current = " current-contest"
+                    // Set the most recent contest to be the current contest (if the deadline has not been reached)
+                    if (i == 0 && new Date(contests[0].deadline).valueOf() > new Date().valueOf()) {
+                        current = " current-contest";
                     } else {
-                        current = ""
-                    }
+                        current = "";
+                    };
 
                     heading = contests[i].title;
+                    description = contests[i].description.replace(/<p>/g, '').replace(/<\/p>/g, '<br><br>');
                     image = contests[i].link + "/" + contests[i].imageFile;
-                    contestBoard.innerHTML += "<div class=\"contest-box col" + col + current + "\"><h4 original=\"" + heading + "\" oninput=\"checkChanges(this);contests[" + i + "].title = this.innerHTML\" contenteditable=true>" + contests[i].title + "</h4><p original=\"" + image + "\" class=\"link-editable\" oninput=\"checkChanges(this);this.parentElement.children[2].src = this.innerHTML\" contenteditable=\"true\">" + image + "</p><img onclick=\"displayContent('contest'); showContest(" + i + ")\" src=\"" + image + "\"></div>";
-                    countAdded += 1;
-                }
-            }
-        }
+
+                    // Create the contest box elements
+                    divTag = document.createElement("div");
+                    divTag.className = "contest-box col" + col + current;
+
+                    h4Tag = document.createElement("h4");
+                    h4Tag.setAttribute("original", heading);
+                    h4Tag.setAttribute("oninput", "checkChanges(this); contests[" + i + "].title = this.innerHTML");
+                    h4Tag.contentEditable = true;
+                    h4Tag.innerHTML = heading;
+                    divTag.appendChild(h4Tag);
+
+                    pTag = document.createElement("p");
+                    pTag.className = "link-editable";
+                    pTag.setAttribute("original", image);
+                    pTag.setAttribute("oninput", "checkChanges(this); this.parentElement.children[2].src = this.innerHTML; contestLink(this, " + i + ")");
+                    pTag.contentEditable = true;
+                    pTag.innerHTML = image;
+                    divTag.appendChild(pTag);
+
+                    imgTag = document.createElement("img");
+                    imgTag.setAttribute("onclick", "displayContent('contest'); showContest(" + i + ")");
+                    imgTag.href = "#";
+                    imgTag.src = image;
+                    divTag.appendChild(imgTag);
+
+                    contestBoard.appendChild(divTag);
+
+                    // Create the contest content elements
+
+                    containerTag = document.createElement("div");
+                    containerTag.id = "contest-" + i
+                    containerTag.style = "display:none"
+
+                    h1Tag = document.createElement("h1");
+                    h1Tag.className = "heading";
+                    h1Tag.setAttribute("original", heading);
+                    h1Tag.setAttribute("oninput", "checkChanges(this); contests[" + i + "].title = this.innerHTML");
+                    h1Tag.contentEditable = true;
+                    h1Tag.innerHTML = heading;
+                    containerTag.appendChild(h1Tag);
+
+                    divTag = document.createElement("div");
+                    divTag.className = "contest-info";
+
+                    h3Tag = document.createElement("h3");
+                    h3Tag.innerHTML = "Description";
+                    divTag.appendChild(h3Tag);
+
+                    pTag = document.createElement("p");
+                    pTag.setAttribute("original", description);
+                    pTag.setAttribute("oninput", "checkChanges(this); updateDescription(this, " + i + ")");
+                    pTag.contentEditable = true;
+                    pTag.innerHTML = description;
+                    divTag.appendChild(pTag);
+
+                    h3Tag = document.createElement("h3");
+                    h3Tag.innerHTML = "Deadline";
+                    divTag.appendChild(h3Tag);
+
+                    pTag = document.createElement("p");
+                    pTag.innerHTML = "All projects must be submitted by " + contests[i].deadline + ".";
+                    divTag.appendChild(pTag);
+
+                    aTag = document.createElement("a");
+                    aTag.className = "contest-link";
+                    aTag.setAttribute("target", "_blank");
+                    aTag.href = contests[i].link;
+                    aTag.innerHTML = "View contest page and submit your entry here.";
+                    divTag.appendChild(aTag);
+
+                    containerTag.appendChild(divTag);
+                    box.appendChild(containerTag);
+
+                };
+            };
+        };
 
         loadContestBoard();
+
+        // Update the dictionary with the description and replace links with the correct HTML tag
+        function updateDescription(self, i) {
+            contests[i].description = self.innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+        }
 
         function showContest(i) {
             var box = document.getElementById("contest");
 
-            box.innerHTML = "<a onClick=\"displayContent('contests-content')\" href=\"#\"><h1 class=\"heading\">Contests</h1></a></li><h1 class=\"heading\">" + contests[i].title + "</h1><div class=\"contest-info\"><h3>Description</h3>" + contests[i].description + "<h3>Deadline</h3><p>All projects must be submitted by " + contests[i].deadline + ".</p><a href=\"" + contests[i].link + "\" target=\"_blank\" class=\"contest-link\">View contest page and submit your entry here.</a></div>";
+            document.getElementById("contest-" + i).style.display = "block";
 
             if (contests[i].resultsAreVisible == true) {
 
