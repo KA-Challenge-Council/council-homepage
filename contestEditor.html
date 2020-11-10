@@ -2862,37 +2862,61 @@
 
         var loadedContests = [];
         function createContest() {
-            i = loadedContests.length;
+            index = loadedContests.length;
+            previousContest = document.getElementById("contest"+(index-1))
 
-            if (contests[i].contestIsVisible == true) {
-                // Alternate columns
-                col = i%2+1;
+            // Check if this is the initial run
+            if (loadedContests.length == 0) {
+                initial = true;
+            } else {
+                initial = false;
+            };
+
+            if (contests[index].contestIsVisible == true) {
+                // If initial, alternate the columns
+                if (initial) {
+                    if (previousContest && previousContest.className.includes("col1")) {
+                        col = 2;
+                    } else {
+                        col = 1;
+                    };
+                } else {
+                    // Otherwise reorganize the columns
+                    for (var i = 0; i < contestBoard.children.length; i += 1) {
+                        x = (i)%2;
+                        contestBoard.children[i].className = contestBoard.children[i].className.replace("col" + (x+1), "col" + (+!x+1));
+                    };
+                };
 
                 // Set the most recent contest to be the current contest (if the deadline has not been reached)
-                if (i == contests.length-1 && new Date(contests[i].deadline).valueOf() > new Date().valueOf()) {
+                if (index == contests.length-1 && new Date(contests[index].deadline).valueOf() > new Date().valueOf()) {
                     type = " current-contest";
                     contentEditable = true;
+                    contests[index].isCurrent = true;
 
-                    previousContest = document.getElementById("contest"+(i-1))
-                    previousContest.className = previousContest.className.replace("current", "previous");
+                    if (!initial) {
+                        // Change the previous contest to not be the current contest
+                        previousContest.className = previousContest.className.replace(" current-contest", "");
+                        contests[index-1].isCurrent = false;
 
-                    if (previousContest.childNodes[5]) {
-                        previousContest.childNodes[5].remove();
+                        if (previousContest.childNodes[5]) {
+                            previousContest.childNodes[5].remove();
+                        };
                     };
                 } else {
                     type = "";
                     contentEditable = false;
                 };
 
-                deadline = contests[i].deadline;
-                deadlineFormatted = dateConversion(contests[i].deadline);
-                title = contests[i].title;
-                description = contests[i].description.replace(/<\/p><p>/g, '<br><br>').replace(/(?:<p>|<\/p>)/g, "")
-                image = contests[i].link + "/" + contests[i].imageFile;
+                deadline = contests[index].deadline;
+                deadlineFormatted = dateConversion(contests[index].deadline);
+                title = contests[index].title;
+                description = contests[index].description
+                image = contests[index].link + "/" + contests[index].imageFile;
 
                 // Create the contest box elements
                 divTag = document.createElement("div");
-                divTag.id = "contest" + i
+                divTag.id = "contest" + index
                 divTag.className = "contest-box col" + col + type;
 
                 if (contentEditable == true) {
@@ -2900,39 +2924,39 @@
                 }
 
                 h4Tag = document.createElement("h4");
-                h4Tag.id = "contest" + i + " title"
+                h4Tag.id = "contest" + index + " title"
                 h4Tag.setAttribute("original", title);
-                h4Tag.setAttribute("oninput", "checkChanges(this); contests[" + i + "].title = this.innerHTML; document.getElementById(\"contest-content" + i + " title\").innerHTML = this.innerHTML");
+                h4Tag.setAttribute("oninput", "checkChanges(this); contests[" + index + "].title = this.innerHTML; document.getElementById(\"contest-content" + index + " title\").innerHTML = this.innerHTML");
                 h4Tag.contentEditable = contentEditable;
                 h4Tag.innerHTML = title;
                 divTag.appendChild(h4Tag);
 
                 if (contentEditable == true) {
                     pTag = document.createElement("p");
-                    pTag.id = "contest" + i + " link"
+                    pTag.id = "contest" + index + " link"
                     pTag.className = "link-editable";
                     pTag.setAttribute("original", image);
-                    pTag.setAttribute("oninput", "checkChanges(this); this.parentElement.children[2].src = this.innerHTML; contestLink(this, " + i + ")");
+                    pTag.setAttribute("oninput", "checkChanges(this); this.parentElement.children[2].src = this.innerHTML; contestLink(this, " + index + ")");
                     pTag.contentEditable = contentEditable;
                     pTag.innerHTML = image;
                     divTag.appendChild(pTag);
                 };
 
                 imgTag = document.createElement("img");
-                imgTag.setAttribute("onclick", "displayContent('contest'); showContest(" + i + ")");
+                imgTag.setAttribute("onclick", "displayContent('contest'); showContest(" + index + ")");
                 imgTag.href = "#";
                 imgTag.src = image;
                 divTag.appendChild(imgTag);
 
                 if (contentEditable == true) {
                     buttonTag = document.createElement("button");
-                    buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest" + i + " title\"); element.innerHTML = element.attributes.original.value; element.oninput()");
+                    buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest" + index + " title\"); element.innerHTML = element.attributes.original.value; element.oninput()");
                     buttonTag.innerHTML = "Reset title";
                     divTag.appendChild(buttonTag);
 
                     buttonTag = document.createElement("button");
                     buttonTag.setAttribute("style", "margin-left: 20px");
-                    buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest" + i + " link\"); element.innerHTML = element.attributes.original.value; element.oninput()");
+                    buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest" + index + " link\"); element.innerHTML = element.attributes.original.value; element.oninput()");
                     buttonTag.innerHTML = "Reset link";
                     divTag.appendChild(buttonTag);
                 };
@@ -2948,11 +2972,11 @@
 
                 // Create the contest content elements
                 containerTag = document.createElement("div");
-                containerTag.id = "contest-content" + i
+                containerTag.id = "contest-content" + index
                 containerTag.style = "display:none"
 
                 h1Tag = document.createElement("h1");
-                h1Tag.id = "contest-content" + i + " title"
+                h1Tag.id = "contest-content" + index + " title"
                 h1Tag.className = "heading";
                 h1Tag.innerHTML = title;
                 containerTag.appendChild(h1Tag);
@@ -2966,7 +2990,7 @@
 
                 pTag = document.createElement("p");
                 pTag.setAttribute("original", description);
-                pTag.setAttribute("oninput", "checkChanges(this); updateDescription(this, " + i + ")");
+                pTag.setAttribute("oninput", "checkChanges(this); updateDescription(this, " + index + ")");
                 pTag.contentEditable = contentEditable;
                 pTag.innerHTML = description;
                 divTag.appendChild(pTag);
@@ -2980,15 +3004,15 @@
 
                 if (contentEditable == true) {
                     dateTag = document.createElement("input");
-                    dateTag.id = "contest-content" + i + " deadline"
+                    dateTag.id = "contest-content" + index + " deadline"
                     dateTag.type = "date";
                     dateTag.setAttribute("original", deadline);
-                    dateTag.setAttribute("oninput", "checkChanges(this); contests[" + i + "].deadline = this.value; this.parentElement.childNodes[1].innerHTML = dateConversion(this.value)")
+                    dateTag.setAttribute("oninput", "checkChanges(this); contests[" + index + "].deadline = this.value; this.parentElement.childNodes[1].innerHTML = dateConversion(this.value)")
                     dateTag.setAttribute("value", deadline);
                     pTag.appendChild(dateTag);
 
                     buttonTag = document.createElement("button");
-                    buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest-content" + i + " deadline\"); element.value = element.attributes.original.value; element.oninput()");
+                    buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest-content" + index + " deadline\"); element.value = element.attributes.original.value; element.oninput()");
                     buttonTag.setAttribute("style", "margin-left: 10px")
                     buttonTag.innerHTML = "Reset date";
                     pTag.appendChild(buttonTag);
@@ -2996,10 +3020,10 @@
                 divTag.appendChild(pTag);
 
                 aTag = document.createElement("a");
-                aTag.id = "contest-content" + i + " link"
+                aTag.id = "contest-content" + index + " link"
                 aTag.className = "contest-link";
                 aTag.setAttribute("target", "_blank");
-                aTag.href = contests[i].link;
+                aTag.href = contests[index].link;
                 aTag.innerHTML = "View contest page and submit your entry here.";
                 divTag.appendChild(aTag);
 
@@ -3007,7 +3031,7 @@
                 box.prepend(containerTag);
             };
 
-            loadedContests.push("contest"+i);
+            loadedContests.push("contest"+index);
         };
 
         // Adds contests to the contests board
