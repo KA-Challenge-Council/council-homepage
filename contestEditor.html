@@ -285,6 +285,22 @@
                 clear: right;
             }
 
+            .new {
+                justify-content: center;
+                align-items: center;
+                display: flex;
+            }
+
+            .contest-add {
+                position: absolute;
+                background-color: #3D80F2;
+                border-radius: 5px;
+            }
+
+            .contest-box:hover .contest-add {
+                background-color: #333;
+            }
+
             .contest-info {
                 background-color: white;
                 color: black;
@@ -2598,7 +2614,7 @@
             "isCurrent": false,
             "contestIsVisible": true,
             "resultsAreVisible": true,
-            "description": " All around us, there are tools created by man. We are surrounded by so many applications that most of them completely escape our attention. Some applications are created for specific tasks, while others can help us with almost everything. Computers and technology are advancing at such a remarkable pace that we can now create computer programs to complete almost anything electronically.<br><br>For this contest, create a useful program that helps accomplish a common task. This includes applications in the range from something as simple as a planner or stopwatch to anything as advanced as a decryption tool or sprite tool, and beyond!<br><br> We will be accepting both HTML\/CSS and PJS projects for this contest. If you would like to submit an HTML entry, visit the <a href = 'https:\/\/www.khanacademy.org\/computer-programming\/contest-useful-application\/4559313606361088' target = '_blank'>HTML Entry Page<\/a>.<br><br>The deadline for this contest is October 24, 2020. We will judge in the week after that, and award based on creativity, complexity, and clean, commented code. There will be at least one winner per skill bracket for each language. The selected winners will receive a Golden Winston.<br><br>Attribute any parts of your code you didn't write, and most importantly, have fun!",
+            "description": "All around us, there are tools created by man. We are surrounded by so many applications that most of them completely escape our attention. Some applications are created for specific tasks, while others can help us with almost everything. Computers and technology are advancing at such a remarkable pace that we can now create computer programs to complete almost anything electronically.<br><br>For this contest, create a useful program that helps accomplish a common task. This includes applications in the range from something as simple as a planner or stopwatch to anything as advanced as a decryption tool or sprite tool, and beyond!<br><br> We will be accepting both HTML\/CSS and PJS projects for this contest. If you would like to submit an HTML entry, visit the <a href = 'https:\/\/www.khanacademy.org\/computer-programming\/contest-useful-application\/4559313606361088' target = '_blank'>HTML Entry Page<\/a>.<br><br>The deadline for this contest is October 24, 2020. We will judge in the week after that, and award based on creativity, complexity, and clean, commented code. There will be at least one winner per skill bracket for each language. The selected winners will receive a Golden Winston.<br><br>Attribute any parts of your code you didn't write, and most importantly, have fun!",
             "deadline": "2020-10-24",
             "results": {
                 "advanced": [
@@ -2880,9 +2896,9 @@
                 // If initial, alternate the columns
                 if (initial) {
                     if (previousContest && previousContest.className.includes("col1")) {
-                        col = 2;
-                    } else {
                         col = 1;
+                    } else {
+                        col = 2;
                     };
                 } else {
                     // Otherwise reorganize the columns
@@ -3064,6 +3080,27 @@
             };
 
             loadedContests.push("contest" + index);
+
+            // Empty contest entry for creating a new contest
+            // Need remove button too
+            if (index == contests.length-1) {
+                divTag = document.createElement("div");
+                divTag.id = "contest" + (index+1);
+                divTag.className = "contest-box col1 new";
+                divTag.setAttribute("onclick", "createContest()")
+
+                div2Tag = document.createElement("div");
+                div2Tag.className = "contest-add";
+                div2Tag.setAttribute("style", "width: 25px;height: 125px");
+
+                div3Tag = document.createElement("div");
+                div3Tag.className = "contest-add";
+                div3Tag.setAttribute("style", "width: 125px;height: 25px");
+
+                divTag.prepend(div2Tag);
+                divTag.prepend(div3Tag);
+                contestBoard.prepend(divTag);
+            };
         };
 
         // Adds contests to the contests board
@@ -3077,7 +3114,7 @@
 
         // Update the dictionary with the description and replace links with the correct HTML tag
         function updateDescription(self, i) {
-            contests[i].description = self.innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+            contests[i].description = self.innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/\//g, "\\/")
         }
 
         function showContest(i) {
