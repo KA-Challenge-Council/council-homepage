@@ -4,6 +4,8 @@
         <meta charset="utf-8">
         <title>Test webpage</title>
         <link href="https://fonts.googleapis.com/css?family=Lato|Montserrat&display=swap" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
         <style>
             * {
                 margin: 0;
@@ -2795,8 +2797,6 @@
 
     </script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-
     <!-- Page script -->
     <script>
         function displayContent(currentPage, id) {
@@ -3040,7 +3040,7 @@
                 pTag.setAttribute("original", description);
                 pTag.setAttribute("oninput", "checkChanges(this); updateDescription(this, " + index + ")");
                 pTag.contentEditable = contentEditable;
-                pTag.innerText = description.replace(/<br>/g, "\n");
+                pTag.innerHTML = description;
                 divTag.appendChild(pTag);
 
                 h3Tag = document.createElement("h3");
@@ -3122,67 +3122,76 @@
 
             if (contests[i].resultsAreVisible == true) {
 
-                // Holds content that will be displayed
-                var content = "<h2 class=\"result-heading heading\">Results</h2><div class=\"results\"><div class=\"winner-box\">";
+                h2Tag = document.createElement("h2");
+                h2Tag.className = "result-heading heading";
+                h2Tag.innerHTML = "Results";
+                box.appendChild(h2Tag);
+
+                divTag = document.createElement("div");
+                divTag.className = "results";
+
+                div2Tag = document.createElement("div");
+                div2Tag.className = "winner-box";
+
+                box.appendChild(divTag);
 
                 // Loop through three skill categories
-                for (var a = 0; a < 3; a++) {
-                    var winners = "";
+                for (var category = 0; category < 3; category++) {
+                    var winners = Object.values(contests[i].results)[category];
+                    var categoryName = Object.keys(contests[i].results)[category];
 
-                    content += "<h3>";
-
-                    if (a == 0) {
-                        content += "Advanced Bracket";
-                        winners = contests[i].results.advanced;
-                    }
-                    else if (a == 1) {
-                        content += "Intermediate Bracket";
-                        winners = contests[i].results.intermediate;
-                    }
-                    else {
-                        content += "Beginner Bracket";
-                        winners = contests[i].results.beginner;
-                    }
-
-
-                    content += "</h3>";
-
+                    h3Tag = document.createElement("h3");
+                    h3Tag.innerHTML = (categoryName[0].toUpperCase() + categoryName.slice(1)) + " Bracket";
+                    div2Tag.appendChild(h3Tag);
 
                     // Loop through three entries per category
-                    for (var b = 0; b < winners.length; b++) {
+                    for (var entries = 0; entries < winners.length; entries++) {
+                        winnerClassName = "winning-program";
 
-                        content += "<div class=\"winning-program";
+                        if (entries == 0) {
+                            winnerClassName = winnerClassName + " bold-top";
+                        };
 
-                        if (b == 0) {
-                            content += " bold-top";
-                        }
+                        div3Tag = document.createElement("div");
+                        div3Tag.className = winnerClassName;
 
-                        content += "\"><img src=\"";
-                        content += winners[b].link;
-                        content += "/latest.png\"/><p><a href=\"";
-                        content += winners[b].link;
-                        content += "\" target=\"_blank\">";
-                        content += winners[b].title;
-                        content += "</a></p>";
-                        content += "<p><strong>Created By:</strong> <a href=\"";
-                        content += "https://www.khanacademy.org/profile/";
-                        content += winners[b].authorKaid;
-                        content += "\" target=\"_blank\">";
-                        content += winners[b].authorName;
-                        content += "</a></p>";
+                        imgTag = document.createElement("img");
+                        imgTag.src = domain + winners[entries].link + "/latest.png";
+                        div3Tag.appendChild(imgTag);
 
-                        content += "<p class=\"explanation\">"; // Add the paragraph, even if the entry doesn't have an explanation, for the purposes of formatting
-                        if (winners[b].explanation != "") {
-                            content += "<strong>Comments from the judges: </strong><br>";
-                            content += winners[b].explanation;
-                        }
-                        content += "</p></div>"
-                    }
-                }
+                        pTag = document.createElement("p");
 
-                content += "</div>"; // Close .winner-box
-                box.innerHTML += content;
-            } //if
-        } //function
+                        aTag = document.createElement("a");
+                        aTag.href = domain + winners[entries].link;
+                        aTag.target = "_blank";
+                        aTag.innerHTML = winners[entries].title;
+                        pTag.appendChild(aTag);
+
+                        div3Tag.appendChild(pTag);
+
+                        pTag = document.createElement("p");
+                        pTag.innerHTML = "<strong>Created By:</strong> ";
+
+                        aTag = document.createElement("a");
+                        aTag.href = "https://www.khanacademy.org/profile/" + winners[entries].authorKaid;
+                        aTag.target = "_blank";
+                        aTag.innerHTML = winners[entries].authorName;
+                        pTag.appendChild(aTag);
+
+                        div3Tag.appendChild(pTag);
+
+                        if (winners[entries].explanation != "") {
+                            pTag = document.createElement("p");
+                            pTag.className = "explanation";
+                            pTag.innerHTML = "<strong>Comments from the judges: </strong><br>" + winners[entries].explanation;
+                            div3Tag.appendChild(pTag);
+                        };
+
+                        div2Tag.appendChild(div3Tag);
+                    };
+                };
+                divTag.appendChild(div2Tag);
+            };
+        };
     </script>
 </html>
