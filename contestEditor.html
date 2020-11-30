@@ -2990,6 +2990,9 @@
                 divTag.appendChild(imgTag);
 
                 if (contentEditable == true) {
+                    brTag = document.createElement("br");
+                    divTag.appendChild(brTag);
+
                     buttonTag = document.createElement("button");
                     buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest" + index + " title\"); element.innerHTML = element.attributes.original.value; element.oninput()");
                     buttonTag.innerHTML = "Reset title";
