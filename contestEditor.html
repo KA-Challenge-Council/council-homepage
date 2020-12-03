@@ -3123,7 +3123,7 @@
         function showContest(i) {
             document.getElementById("contest-content" + i).style.display = "";
 
-            if (contests[i].resultsAreVisible == true) {
+            if (contests[i]) {
 
                 h2Tag = document.createElement("h2");
                 h2Tag.className = "result-heading heading";
@@ -3160,6 +3160,7 @@
 
                         imgTag = document.createElement("img");
                         imgTag.src = domain + winners[entries].link + "/latest.png";
+
                         div3Tag.appendChild(imgTag);
 
                         pTag = document.createElement("p");
@@ -3167,7 +3168,7 @@
                         aTag = document.createElement("a");
                         aTag.href = domain + winners[entries].link;
                         aTag.target = "_blank";
-                        aTag.innerHTML = winners[entries].title;
+                        aTag.innerHTML = winners[entries].title || ". . .";
                         pTag.appendChild(aTag);
 
                         div3Tag.appendChild(pTag);
@@ -3178,17 +3179,20 @@
                         aTag = document.createElement("a");
                         aTag.href = "https://www.khanacademy.org/profile/" + winners[entries].authorKaid;
                         aTag.target = "_blank";
-                        aTag.innerHTML = winners[entries].authorName;
+                        aTag.innerHTML = winners[entries].authorName || ". . .";
                         pTag.appendChild(aTag);
 
                         div3Tag.appendChild(pTag);
 
-                        if (winners[entries].explanation != "") {
-                            pTag = document.createElement("p");
-                            pTag.className = "explanation";
-                            pTag.innerHTML = "<strong>Comments from the judges: </strong><br>" + winners[entries].explanation;
-                            div3Tag.appendChild(pTag);
-                        };
+                        pTag = document.createElement("p");
+                        pTag.className = "explanation";
+                        pTag.innerHTML = "<strong>Comments from the judges: </strong><br>";
+
+                        pTag2 = document.createElement("p");
+                        pTag2.innerHTML = winners[entries].explanation || ". . .";
+
+                        pTag.appendChild(pTag2);
+                        div3Tag.appendChild(pTag);
 
                         div2Tag.appendChild(div3Tag);
                     };
