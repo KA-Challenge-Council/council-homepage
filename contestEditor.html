@@ -6,6 +6,49 @@
         <link href="https://fonts.googleapis.com/css?family=Lato|Montserrat&display=swap" rel="stylesheet">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 
+        <!-- Include stylesheet -->
+        <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.bubble.css" rel="stylesheet">
+        <!-- Include the Quill library -->
+        <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Lato|Montserrat&amp;display=swap" rel="stylesheet">
+
+        <style>
+        /* Tell Quill not to scroll */
+        #quill-container {
+            height: auto;
+            min-height: 100%;
+            padding: 50px;
+        }
+        #quill-container .ql-editor {
+            font-size: 18px;
+            overflow-y: visible;
+        }
+
+        .ql-editor {
+            width: 93%;
+        }
+
+        .ql-container {
+            font-size: 16px;
+        }
+
+        .ql-bubble .ql-tooltip {
+            background-color: #1865F2;
+        }
+
+        .ql-bubble .ql-tooltip:not(.ql-flip) .ql-tooltip-arrow {
+            border-bottom-color: #114EB6;
+        }
+
+        .ql-bubble .ql-stroke {
+            stroke: #fff;
+        }
+
+        .ql-bubble .ql-fill, .ql-bubble .ql-stroke.ql-fill {
+            fill: #fff;
+        }
+        </style>
+
         <style>
             * {
                 margin: 0;
@@ -14,6 +57,7 @@
 
             body {
                 font-family: serif;
+                font-size: 16px;
                 overflow-x: hidden;
                 background-color: #f7f8fa;
                 height: 2000px;
@@ -325,10 +369,6 @@
 
             .contest-info p {
                 font-family: 'Montserrat';
-                margin-bottom: 30px;
-                margin-left: 20px;
-                width: 80%;
-                padding-left: 10px;
                 line-height: 1.5em;
             }
 
@@ -337,6 +377,11 @@
                 text-decoration: none;
                 margin-left: 30px;
                 color: #1865F2;
+            }
+
+            .contest-description {
+                display: flex;
+                justify-content: center;
             }
 
             .result-heading {
@@ -3038,13 +3083,27 @@
                 buttonTag.innerHTML = "Reset description";
                 h3Tag.appendChild(buttonTag);
 
-                pTag = document.createElement("p");
-                pTag.id = "contest-content" + index + " description"
+                pTag = document.createElement("div");
+                pTag.id = "contest-content" + index + " description";
+                pTag.className = "contest-description";
                 pTag.setAttribute("original", description);
                 pTag.setAttribute("oninput", "checkChanges(this); updateDescription(this, " + index + ")");
-                pTag.contentEditable = contentEditable;
                 pTag.innerHTML = description;
                 divTag.appendChild(pTag);
+
+                if (contentEditable == true) {
+                    var quill = new Quill(pTag, {
+                        modules: {
+                            toolbar: [
+                                ['bold', 'italic', 'underline', 'link']
+                            ]
+                        },
+                        theme: 'bubble'
+                    });
+                    quill.on('text-change', function(delta, oldDelta, source) {
+                        console.log(quill.container)
+                    });
+                }
 
                 h3Tag = document.createElement("h3");
                 h3Tag.innerHTML = "Deadline";
@@ -3052,6 +3111,7 @@
 
                 pTag = document.createElement("p");
                 pTag.innerHTML = "All projects must be submitted by <span>" + deadlineFormatted + "</span>.<br><br>";
+                pTag.style = "margin-left: 30px";
 
                 if (contentEditable == true) {
                     dateTag = document.createElement("input");
@@ -3066,9 +3126,13 @@
                     buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest-content" + index + " deadline\"); element.value = element.attributes.original.value; element.oninput()");
                     buttonTag.setAttribute("style", "margin-left: 10px")
                     buttonTag.innerHTML = "Reset date";
+
                     pTag.appendChild(buttonTag);
                 }
                 divTag.appendChild(pTag);
+
+                brTag = document.createElement("br");
+                divTag.appendChild(brTag);
 
                 aTag = document.createElement("a");
                 aTag.id = "contest-content" + index + " link"
@@ -3123,6 +3187,8 @@
         function showContest(i) {
             document.getElementById("contest-content" + i).style.display = "";
 
+            contentEditable = false;
+
             if (contests[i]) {
 
                 h2Tag = document.createElement("h2");
@@ -3137,6 +3203,10 @@
                 div2Tag.className = "winner-box";
 
                 box.appendChild(divTag);
+
+                if (i == contests.length-1) {
+                    contentEditable = true;
+                }
 
                 // Loop through three skill categories
                 for (var category = 0; category < 3; category++) {
@@ -3189,6 +3259,7 @@
                         pTag.innerHTML = "<strong>Comments from the judges: </strong><br>";
 
                         pTag2 = document.createElement("p");
+                        pTag2.contentEditable = contentEditable;
                         pTag2.innerHTML = winners[entries].explanation || ". . .";
 
                         pTag.appendChild(pTag2);
