@@ -25,7 +25,8 @@
         }
 
         .ql-editor {
-            width: 93%;
+            padding: 0;
+            margin: 0;
         }
 
         .ql-container {
@@ -434,6 +435,12 @@
                 font-family: 'Montserrat', serif;
                 padding-bottom: 0px;
                 line-height: 1.7em;
+            }
+
+            .winning-program p {
+                font-family: 'Montserrat', serif;
+                line-height: 1.7em;
+                font-size: 18px;
             }
 
             .winning-program-old {
@@ -2884,8 +2891,8 @@
         };
 
         // Changes styling if an elements content is different from the original content
-        function checkChanges(element) {
-            query = element.innerHTML;
+        function checkChanges(element, query) {
+            query = query.innerHTML.replace(/<\/p><p><br><\/p><p>/g, "<br><br>");
             type = "";
 
             if (element.nodeName.toLowerCase() == "input" && element.type == "date") {
@@ -2924,6 +2931,11 @@
             // Set the contest content link
             document.getElementById("contest-content" + i + " link").href = contests[i].link;
         };
+
+        // Update the dictionary with the description and replace links with the correct HTML tag
+        function updateDescription(self, i) {
+            contests[i].description = self.childNodes[0].innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/<\/p><p><br><\/p><p>/g, "<br><br>")
+        }
 
         var loadedContests = [];
         function createContest() {
@@ -2991,7 +3003,7 @@
                 h4Tag = document.createElement("h4");
                 h4Tag.id = "contest" + index + " title"
                 h4Tag.setAttribute("original", title);
-                h4Tag.setAttribute("oninput", "checkChanges(this); contests[" + index + "].title = this.innerHTML; document.getElementById(\"contest-content" + index + " title\").innerHTML = this.innerHTML");
+                h4Tag.setAttribute("oninput", "checkChanges(this, this); contests[" + index + "].title = this.innerHTML; document.getElementById(\"contest-content" + index + " title\").innerHTML = this.innerHTML");
                 h4Tag.contentEditable = contentEditable;
                 h4Tag.innerHTML = title;
                 divTag.appendChild(h4Tag);
@@ -3008,7 +3020,7 @@
                     pTag.className = "link-editable";
                     pTag.setAttribute("spellcheck", "false");
                     pTag.setAttribute("original", contests[index].link);
-                    pTag.setAttribute("oninput", "checkChanges(this); contestLink(this, " + index + ", 0)");
+                    pTag.setAttribute("oninput", "checkChanges(this, this); contestLink(this, " + index + ", 0)");
                     pTag.contentEditable = contentEditable;
                     pTag.innerHTML = contests[index].link;
                     div3Tag.appendChild(pTag);
@@ -3018,7 +3030,7 @@
                     pTag.className = "link-editable";
                     pTag.setAttribute("spellcheck", "false");
                     pTag.setAttribute("original", contests[index].imageFile);
-                    pTag.setAttribute("oninput", "checkChanges(this); contestLink(this, " + index + ", 1)");
+                    pTag.setAttribute("oninput", "checkChanges(this, this); contestLink(this, " + index + ", 1)");
                     pTag.contentEditable = contentEditable;
                     pTag.innerHTML = contests[index].imageFile;
                     div3Tag.appendChild(pTag);
@@ -3077,32 +3089,29 @@
                 h3Tag.innerHTML = "Description";
                 divTag.appendChild(h3Tag);
 
-                buttonTag = document.createElement("button");
-                buttonTag.setAttribute("style", "margin-left: 10px");
-                buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest-content" + index + " description\"); element.innerHTML = element.attributes.original.value; element.oninput()");
-                buttonTag.innerHTML = "Reset description";
-                h3Tag.appendChild(buttonTag);
+                descriptionTag = document.createElement("div");
+                descriptionTag.id = "contest-content" + index + " description";
+                descriptionTag.className = "contest-description";
+                descriptionTag.setAttribute("original", "<p>" + description + "</p>");
+                descriptionTag.innerHTML = description;
+                divTag.appendChild(descriptionTag);
 
-                pTag = document.createElement("div");
-                pTag.id = "contest-content" + index + " description";
-                pTag.className = "contest-description";
-                pTag.setAttribute("original", description);
-                pTag.setAttribute("oninput", "checkChanges(this); updateDescription(this, " + index + ")");
-                pTag.innerHTML = description;
-                divTag.appendChild(pTag);
+                var quill = new Quill(descriptionTag, {
+                    modules: {
+                        toolbar: [
+                            ['bold', 'italic', 'underline', 'link']
+                        ]
+                    },
+                    theme: 'bubble'
+                });
+                quill.on('text-change', function(delta, oldDelta, source) {
+                    checkChanges(quill.container, quill.container.childNodes[0]);
+                    updateDescription(quill.container, quill.container.id.match(/content\d+/)[0].replace("content", ""));
+                });
+                descriptionTag.childNodes[0].style.width = "88%";
 
-                if (contentEditable == true) {
-                    var quill = new Quill(pTag, {
-                        modules: {
-                            toolbar: [
-                                ['bold', 'italic', 'underline', 'link']
-                            ]
-                        },
-                        theme: 'bubble'
-                    });
-                    quill.on('text-change', function(delta, oldDelta, source) {
-                        console.log(quill.container)
-                    });
+                if (contentEditable == false) {
+                    quill.disable()
                 }
 
                 h3Tag = document.createElement("h3");
@@ -3118,7 +3127,7 @@
                     dateTag.id = "contest-content" + index + " deadline"
                     dateTag.type = "date";
                     dateTag.setAttribute("original", deadline);
-                    dateTag.setAttribute("oninput", "checkChanges(this); contests[" + index + "].deadline = this.value; this.parentElement.childNodes[1].innerHTML = dateConversion(this.value)")
+                    dateTag.setAttribute("oninput", "checkChanges(this, this); contests[" + index + "].deadline = this.value; this.parentElement.childNodes[1].innerHTML = dateConversion(this.value)")
                     dateTag.setAttribute("value", deadline);
                     pTag.appendChild(dateTag);
 
@@ -3178,11 +3187,6 @@
         };
 
         loadContestBoard();
-
-        // Update the dictionary with the description and replace links with the correct HTML tag
-        function updateDescription(self, i) {
-            contests[i].description = self.innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/\//g, "\\/")
-        }
 
         function showContest(i) {
             document.getElementById("contest-content" + i).style.display = "";
@@ -3258,13 +3262,25 @@
                         pTag.className = "explanation";
                         pTag.innerHTML = "<strong>Comments from the judges: </strong><br>";
 
-                        pTag2 = document.createElement("p");
-                        pTag2.contentEditable = contentEditable;
+                        pTag2 = document.createElement("div");
+                        pTag2.style = "font-size:18px;font-family:'Montserrat', serif;line-height:1.7em";
+                        pTag2.setAttribute("original", winners[entries].explanation || "<p>. . .<p>");
                         pTag2.innerHTML = winners[entries].explanation || ". . .";
-
                         pTag.appendChild(pTag2);
-                        div3Tag.appendChild(pTag);
 
+                        var quill2 = new Quill(pTag2, {
+                            modules: {
+                                toolbar: [
+                                    ['bold', 'italic', 'underline', 'link']
+                                ]
+                            },
+                            theme: 'bubble'
+                        });
+                        quill2.on('text-change', function(delta, oldDelta, source) {
+                            checkChanges(quill2.container, quill2.container.childNodes[0]);
+                        });
+
+                        div3Tag.appendChild(pTag);
                         div2Tag.appendChild(div3Tag);
                     };
                 };
