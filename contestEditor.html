@@ -30,7 +30,9 @@
         }
 
         .ql-container {
+            font-family: 'Lato';
             font-size: 16px;
+            height: auto;
         }
 
         .ql-bubble .ql-tooltip {
@@ -61,7 +63,6 @@
                 font-size: 16px;
                 overflow-x: hidden;
                 background-color: #f7f8fa;
-                height: 2000px;
                 overflow: hidden;
             }
 
@@ -284,7 +285,6 @@
                 margin: auto;
                 margin-bottom: 20px;
                 width: 44%;
-                height: 250px;
                 background-color: white;
                 color: #21242C;
                 font-family: 'Lato';
@@ -292,12 +292,7 @@
                 padding: 10px;
                 padding-bottom: 1.8%;
                 border-radius: 5px;
-                border: 1px solid lightgrey;
-            }
-
-            .contest-box:hover {
-                border: 1px solid #21242C;
-                cursor: pointer;
+                border: 1px solid #5F15F2;
             }
 
             .contest-box img {
@@ -310,7 +305,7 @@
                 border: 1px solid #1865F2;
             }
 
-            .current-contest-tag {
+            .contest-tag {
                 font-size: 12px;
                 display: block;
                 border: 2px solid #1865F2;
@@ -320,6 +315,15 @@
                 margin-top: 4px;
                 font-family: 'Lato';
                 color: #1865F2;
+            }
+
+            .contest-tag:hover {
+                cursor: pointer;
+            }
+
+            .contest-tag.previous {
+                color: #6016F2;
+                border-color: #6016F2;
             }
 
             .col1 {
@@ -561,20 +565,29 @@
                 background: rgba(255, 255, 255, 0.75);
             }
 
+            .unselectable {
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+
         </style>
     </head>
 
     <body>
 
         <div class="content" style="padding-top:37px;">
-            <a href="#" onclick="displayContent('contests-content')"><h1 class="heading" style="color:white">Contests</h1></a>
+            <h1 class="heading" style="color:white">Contest Editor</h1>
         </div>
         <div id="contests-content" class="content">
             <div id="contest-board"></div>
         </div>
 
         <!-- Holds the currently displayed contest -->
-        <div id="contest" class="content" style="display:none">
+        <div id="contest" class="content">
 
         </div>
 
@@ -592,10 +605,95 @@
     document.body.appendChild(s);
     **/
 
+    // TEMP
+    var contests = [
+        {
+            "title": "Bird Seed Factory",
+            "link": "contest-bird-seed-factory\/4894927375515648",
+            "imageFile": "latest.png",
+            "isCurrent": true,
+            "contestIsVisible": true,
+            "resultsAreVisible": false,
+            "description": "Some students study programming just for the knowledge, and some want to make it a career. For this contest we are going to depart from the normal type of contest to go on an imaginary job interview!<br><br>Walking into a manufacturing company looking for software development work might include the interviewer asking you to sit down and use their computer\/software to solve a programming problem. That is what this contest is simulating. An imaginary production equipment manufacturer that makes robotic arms and other production machinery needs a software developer to write the software that is the brains of their production equipment.<br><br>There are three skill levels as listed in the contest code. Pick one (or more) levels and fill in the missing code that will make the machinery do its task. The deadline for this contest is December 26th, 2020. We will judge in the week after that, awarding winners based on creativity, efficiency, and clean, commented code.<br><br>This is a new type of contest and we would welcome your comments and feedback in the Tips & Thanks section below. If there is enough interest, we could add another contest some time next year to perhaps give you a version 1 application, and let you add features or creative improvements to make it a version 2 application, or other such ideas. Feel free to let us know what you think of this contest type (good or bad).<br><br>All entries should be submitted as a spin-off of this project. Attribute any parts of your entry that you didn't write. Most importantly, have fun!",
+            "deadline": "2020-12-26",
+            "results": {
+                "advanced": [
+                    {
+                        "link": "",
+                        "title": "",
+                        "authorName": "",
+                        "authorKaid": "",
+                        "explanation": ""
+                    },
+                    {
+                        "link": "",
+                        "title": "",
+                        "authorName": "",
+                        "authorKaid": "",
+                        "explanation": ""
+                    },
+                    {
+                        "link": "",
+                        "title": "",
+                        "authorName": "",
+                        "authorKaid": "",
+                        "explanation": ""
+                    }
+                ],
+                "intermediate": [
+                    {
+                        "link": "",
+                        "title": "",
+                        "authorName": "",
+                        "authorKaid": "",
+                        "explanation": ""
+                    },
+                    {
+                        "link": "",
+                        "title": "",
+                        "authorName": "",
+                        "authorKaid": "",
+                        "explanation": ""
+                    },
+                    {
+                        "link": "",
+                        "title": "",
+                        "authorName": "",
+                        "authorKaid": "",
+                        "explanation": ""
+                    }
+                ],
+                "beginner": [
+                    {
+                        "link": "",
+                        "title": "",
+                        "authorName": "",
+                        "authorKaid": "",
+                        "explanation": ""
+                    },
+                    {
+                        "link": "",
+                        "title": "",
+                        "authorName": "",
+                        "authorKaid": "",
+                        "explanation": ""
+                    },
+                    {
+                        "link": "",
+                        "title": "",
+                        "authorName": "",
+                        "authorKaid": "",
+                        "explanation": ""
+                    }
+                ]
+            }
+        }
+    ]
+
 
     // json = JSON.stringify(contests).replace(/\//g, "\\/")
     // START JSON - DO NOT REMOVE
-    var contests = [
+    var contestsList = [
         {
             "title": "Fantasy Landscape",
             "link": "contest-fantasy-landscape\/5234130249875456",
@@ -2849,29 +2947,7 @@
 
     </script>
 
-    <!-- Page script -->
     <script>
-        function displayContent(currentPage, id) {
-
-            // Hide all of the pages
-            document.getElementById("contests-content").style.display = "none";
-            document.getElementById("contest").style.display = "none";
-
-            for (var i = 0; i < document.getElementById("contest").children.length; i += 1) {
-                document.getElementById("contest").children[i].style.display = "none";
-            };
-
-            //Get page selected
-            var activePage = document.getElementById(currentPage);
-
-            //Show current page
-            activePage.style.display = "";
-
-            //Go back to top of page when a new page is displayed
-            document.body.scrollTop = document.documentElement.scrollTop = 0;
-
-        }
-
         // Startup
         var body = document.querySelector("body");
         body.style.overflow = "scroll";
@@ -2920,372 +2996,314 @@
         function contestLink(element, i, type) {
             // Set the dictionary items to the new content
             if (type == 0) {
-                contests[i].link = element.innerHTML;
+                contests[0].link = element.innerHTML;
             } else if (type == 1) {
-                contests[i].imageFile = element.innerHTML;
+                contests[0].imageFile = element.innerHTML;
             };
 
             // Set the image link
-            document.getElementById("contest" + i + " image").src = domain + contests[i].link + "/" + contests[i].imageFile;
+            document.getElementById("contest" + i + " image").src = domain + contests[0].link + "/" + contests[0].imageFile;
 
             // Set the contest content link
-            document.getElementById("contest-content" + i + " link").href = contests[i].link;
+            document.getElementById("contest-content" + i + " link").href = contests[0].link;
         };
 
         // Update the dictionary with the description and replace links with the correct HTML tag
         function updateDescription(self, i) {
-            contests[i].description = self.childNodes[0].innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/<\/p><p><br><\/p><p>/g, "<br><br>")
+            contests[0].description = self.childNodes[0].innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/<\/p><p><br><\/p><p>/g, "<br><br>")
         }
 
-        var loadedContests = [];
         function createContest() {
-            index = loadedContests.length;
-            previousContest = document.getElementById("contest"+(index-1))
+            deadline = contests[0].deadline;
+            deadlineFormatted = dateConversion(contests[0].deadline);
+            title = contests[0].title;
+            description = contests[0].description
+            image = contests[0].link + "/" + contests[0].imageFile;
+            isCurrent = contests[0].isCurrent;
 
-            // Check if this is the initial run
-            if (loadedContests.length == 0) {
-                initial = true;
+            if (isCurrent) {
+                type = " current-contest";
             } else {
-                initial = false;
-            };
+                type = "";
+            }
 
-            if (contests[index].contestIsVisible == true) {
-                // If initial, alternate the columns
-                if (initial) {
-                    if (previousContest && previousContest.className.includes("col1")) {
-                        col = 1;
-                    } else {
-                        col = 2;
-                    };
+            // Create the contest box elements
+            divTag = document.createElement("div");
+            divTag.id = "contest";
+            divTag.className = "contest-box" + type;
+
+            titleTag = document.createElement("div");
+            titleTag.id = "contest title"
+            titleTag.setAttribute("spellcheck", "false");
+            titleTag.setAttribute("original", title);
+            titleTag.innerHTML = "<b>" + title + "</b>";
+            divTag.appendChild(titleTag);
+
+            var quillTitleTag = new Quill(titleTag);
+            quillTitleTag.on('text-change', function(delta, oldDelta, source) {
+                element = quillTitleTag.container.childNodes[0].childNodes[0]
+                parent = quillTitleTag.container
+
+                if (element.innerText != parent.attributes.original.value) {
+                    element.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
                 } else {
-                    // Otherwise reorganize the columns
-                    for (var i = 0; i < contestBoard.children.length; i += 1) {
-                        x = (i)%2;
-                        contestBoard.children[i].className = contestBoard.children[i].className.replace("col" + (x+1), "col" + (+!x+1));
-                    };
-                };
+                    element.removeAttribute("style");
+                }
 
-                // Set the most recent contest to be the current contest (if the deadline has not been reached)
-                if (index == contests.length-1 && new Date(contests[index].deadline).valueOf() > new Date().valueOf()) {
-                    type = " current-contest";
-                    contentEditable = true;
-                    contests[index].isCurrent = true;
+                contests[0].title = element.innerText;
+                document.getElementById("contest-content title").innerText = element.innerText;
+            });
+            quillTitleTag.container.childNodes[0].style.textAlign = "center";
+            quillTitleTag.container.childNodes[0].style.fontSize = "14px";
 
-                    if (!initial) {
-                        // Change the previous contest to not be the current contest
-                        previousContest.className = previousContest.className.replace(" current-contest", "");
-                        contests[index-1].isCurrent = false;
+            div2Tag = document.createElement("div");
+            div2Tag.setAttribute("style", "position: relative;justify-content: center;display: flex;");
 
-                        if (previousContest.childNodes[5]) {
-                            previousContest.childNodes[5].remove();
-                        };
-                    };
+            div3Tag = document.createElement("div");
+            div3Tag.setAttribute("style", "position: absolute;width: 100%;margin-top: 8px;");
+
+            linkTag = document.createElement("div");
+            linkTag.id = "contest link";
+            linkTag.className = "link-editable";
+            linkTag.setAttribute("spellcheck", "false");
+            linkTag.setAttribute("original", contests[0].link);
+            linkTag.innerHTML = contests[0].link;
+            div3Tag.appendChild(linkTag);
+
+            var quillLinkTag = new Quill(linkTag);
+            quillLinkTag.on('text-change', function(delta, oldDelta, source) {
+                element = quillLinkTag.container.childNodes[0].childNodes[0]
+                parent = quillLinkTag.container
+
+                if (element.innerText != parent.attributes.original.value) {
+                    element.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
                 } else {
-                    type = "";
-                    contentEditable = false;
-                };
-
-                deadline = contests[index].deadline;
-                deadlineFormatted = dateConversion(contests[index].deadline);
-                title = contests[index].title;
-                description = contests[index].description
-                image = contests[index].link + "/" + contests[index].imageFile;
-
-                // Create the contest box elements
-                divTag = document.createElement("div");
-                divTag.id = "contest" + index
-                divTag.className = "contest-box col" + col + type;
-
-                if (contentEditable == true) {
-                    divTag.setAttribute("style", "height: 280px;");
+                    element.removeAttribute("style");
                 }
 
-                h4Tag = document.createElement("h4");
-                h4Tag.id = "contest" + index + " title"
-                h4Tag.setAttribute("original", title);
-                h4Tag.setAttribute("oninput", "checkChanges(this, this); contests[" + index + "].title = this.innerHTML; document.getElementById(\"contest-content" + index + " title\").innerHTML = this.innerHTML");
-                h4Tag.contentEditable = contentEditable;
-                h4Tag.innerHTML = title;
-                divTag.appendChild(h4Tag);
+                contests[0].link = element.innerText;
+                document.getElementById("contest image").src = domain + element.innerText + "/" + contests[0].imageFile;
+            });
+            quillLinkTag.container.childNodes[0].style.textAlign = "center";
+            quillLinkTag.container.childNodes[0].style.fontSize = "14px";
 
-                if (contentEditable == true) {
-                    div2Tag = document.createElement("div");
-                    div2Tag.setAttribute("style", "position: relative;justify-content: center;display: flex;");
+            pTag = document.createElement("p");
+            pTag.id = "contest imageFile";
+            pTag.className = "link-editable";
+            pTag.setAttribute("spellcheck", "false");
+            pTag.setAttribute("original", contests[0].imageFile);
+            pTag.setAttribute("oninput", "checkChanges(this, this); contestLink(this, 0, 1)");
+            pTag.innerHTML = contests[0].imageFile;
+            div3Tag.appendChild(pTag);
 
-                    div3Tag = document.createElement("div");
-                    div3Tag.setAttribute("style", "position: absolute;width: 100%;margin-top: 8px;");
+            div2Tag.appendChild(div3Tag);
+            divTag.appendChild(div2Tag);
 
-                    pTag = document.createElement("p");
-                    pTag.id = "contest" + index + " link";
-                    pTag.className = "link-editable";
-                    pTag.setAttribute("spellcheck", "false");
-                    pTag.setAttribute("original", contests[index].link);
-                    pTag.setAttribute("oninput", "checkChanges(this, this); contestLink(this, " + index + ", 0)");
-                    pTag.contentEditable = contentEditable;
-                    pTag.innerHTML = contests[index].link;
-                    div3Tag.appendChild(pTag);
+            imgTag = document.createElement("img");
+            imgTag.id = "contest image";
+            imgTag.src = "https://www.khanacademy.org/computer-programming/" + image;
+            divTag.appendChild(imgTag);
 
-                    pTag = document.createElement("p");
-                    pTag.id = "contest" + index + " imageFile";
-                    pTag.className = "link-editable";
-                    pTag.setAttribute("spellcheck", "false");
-                    pTag.setAttribute("original", contests[index].imageFile);
-                    pTag.setAttribute("oninput", "checkChanges(this, this); contestLink(this, " + index + ", 1)");
-                    pTag.contentEditable = contentEditable;
-                    pTag.innerHTML = contests[index].imageFile;
-                    div3Tag.appendChild(pTag);
+            brTag = document.createElement("br");
+            divTag.appendChild(brTag);
 
-                    div2Tag.appendChild(div3Tag);
-                    divTag.appendChild(div2Tag);
-                };
+            buttonTag = document.createElement("button");
+            buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest title\"); element.innerHTML = element.attributes.original.value; element.oninput()");
+            buttonTag.innerHTML = "Reset title";
+            divTag.appendChild(buttonTag);
 
-                imgTag = document.createElement("img");
-                imgTag.id = "contest" + index + " image";
-                imgTag.setAttribute("onclick", "displayContent('contest'); showContest(" + index + ")");
-                imgTag.href = "#";
-                imgTag.src = "https://www.khanacademy.org/computer-programming/" + image;
-                divTag.appendChild(imgTag);
+            buttonTag = document.createElement("button");
+            buttonTag.setAttribute("style", "margin-left: 20px");
+            buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest link\"); element.innerHTML = element.attributes.original.value; element.oninput(); element2 = document.getElementById(\"contest imageFile\"); element2.innerHTML = element2.attributes.original.value; element2.oninput()");
+            buttonTag.innerHTML = "Reset link";
+            divTag.appendChild(buttonTag);
 
-                if (contentEditable == true) {
-                    brTag = document.createElement("br");
-                    divTag.appendChild(brTag);
+            spanTag = document.createElement("span");
+            spanTag.className = "contest-tag unselectable";
+            spanTag.innerHTML = "CURRENT CONTEST";
+            spanTag.onclick = function(element) {
+                element = element.target;
 
-                    buttonTag = document.createElement("button");
-                    buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest" + index + " title\"); element.innerHTML = element.attributes.original.value; element.oninput()");
-                    buttonTag.innerHTML = "Reset title";
-                    divTag.appendChild(buttonTag);
+                element.classList.toggle("previous");
+                element.innerHTML = (!Array.from(element.classList).includes("previous") ? "CURRENT CONTEST" : "PREVIOUS CONTEST");
+                contests[0].isCurrent = !contests[0].isCurrent;
 
-                    buttonTag = document.createElement("button");
-                    buttonTag.setAttribute("style", "margin-left: 20px");
-                    buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest" + index + " link\"); element.innerHTML = element.attributes.original.value; element.oninput(); element2 = document.getElementById(\"contest" + index + " imageFile\"); element2.innerHTML = element2.attributes.original.value; element2.oninput()");
-                    buttonTag.innerHTML = "Reset link";
-                    divTag.appendChild(buttonTag);
-                };
-
-                if (type == " current-contest") {
-                    spanTag = document.createElement("span");
-                    spanTag.className = "current-contest-tag";
-                    spanTag.innerHTML = "CURRENT CONTEST";
-                    divTag.appendChild(spanTag);
-                };
-
-                contestBoard.prepend(divTag);
-
-                // Create the contest content elements
-                containerTag = document.createElement("div");
-                containerTag.id = "contest-content" + index
-                containerTag.style = "display:none"
-
-                h1Tag = document.createElement("h1");
-                h1Tag.id = "contest-content" + index + " title"
-                h1Tag.className = "heading";
-                h1Tag.innerHTML = title;
-                containerTag.appendChild(h1Tag);
-
-                divTag = document.createElement("div");
-                divTag.className = "contest-info";
-
-                h3Tag = document.createElement("h3");
-                h3Tag.innerHTML = "Description";
-                divTag.appendChild(h3Tag);
-
-                descriptionTag = document.createElement("div");
-                descriptionTag.id = "contest-content" + index + " description";
-                descriptionTag.className = "contest-description";
-                descriptionTag.setAttribute("original", "<p>" + description + "</p>");
-                descriptionTag.innerHTML = description;
-                divTag.appendChild(descriptionTag);
-
-                var quill = new Quill(descriptionTag, {
-                    modules: {
-                        toolbar: [
-                            ['bold', 'italic', 'underline', 'link']
-                        ]
-                    },
-                    theme: 'bubble'
-                });
-                quill.on('text-change', function(delta, oldDelta, source) {
-                    checkChanges(quill.container, quill.container.childNodes[0]);
-                    updateDescription(quill.container, quill.container.id.match(/content\d+/)[0].replace("content", ""));
-                });
-                descriptionTag.childNodes[0].style.width = "88%";
-
-                if (contentEditable == false) {
-                    quill.disable()
-                }
-
-                h3Tag = document.createElement("h3");
-                h3Tag.innerHTML = "Deadline";
-                divTag.appendChild(h3Tag);
-
-                pTag = document.createElement("p");
-                pTag.innerHTML = "All projects must be submitted by <span>" + deadlineFormatted + "</span>.<br><br>";
-                pTag.style = "margin-left: 30px";
-
-                if (contentEditable == true) {
-                    dateTag = document.createElement("input");
-                    dateTag.id = "contest-content" + index + " deadline"
-                    dateTag.type = "date";
-                    dateTag.setAttribute("original", deadline);
-                    dateTag.setAttribute("oninput", "checkChanges(this, this); contests[" + index + "].deadline = this.value; this.parentElement.childNodes[1].innerHTML = dateConversion(this.value)")
-                    dateTag.setAttribute("value", deadline);
-                    pTag.appendChild(dateTag);
-
-                    buttonTag = document.createElement("button");
-                    buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest-content" + index + " deadline\"); element.value = element.attributes.original.value; element.oninput()");
-                    buttonTag.setAttribute("style", "margin-left: 10px")
-                    buttonTag.innerHTML = "Reset date";
-
-                    pTag.appendChild(buttonTag);
-                }
-                divTag.appendChild(pTag);
-
-                brTag = document.createElement("br");
-                divTag.appendChild(brTag);
-
-                aTag = document.createElement("a");
-                aTag.id = "contest-content" + index + " link"
-                aTag.className = "contest-link";
-                aTag.setAttribute("target", "_blank");
-                aTag.href = domain + contests[index].link;
-                aTag.innerHTML = "View contest page and submit your entry here.";
-                divTag.appendChild(aTag);
-
-                containerTag.appendChild(divTag);
-                box.prepend(containerTag);
+                document.getElementById("contest").classList.toggle("current-contest");
             };
 
-            loadedContests.push("contest" + index);
+            divTag.appendChild(spanTag);
 
-            // Empty contest entry for creating a new contest
-            // Need remove button too
-            if (index == contests.length-1) {
-                divTag = document.createElement("div");
-                divTag.id = "contest" + (index+1);
-                divTag.className = "contest-box col1 new";
-                divTag.setAttribute("onclick", "createContest()")
+            contestBoard.prepend(divTag);
 
-                div2Tag = document.createElement("div");
-                div2Tag.className = "contest-add";
-                div2Tag.setAttribute("style", "width: 25px;height: 125px");
+            // Create the contest content elements
+            containerTag = document.createElement("div");
+            containerTag.id = "contest-content";
 
-                div3Tag = document.createElement("div");
-                div3Tag.className = "contest-add";
-                div3Tag.setAttribute("style", "width: 125px;height: 25px");
+            h1Tag = document.createElement("h1");
+            h1Tag.id = "contest-content title"
+            h1Tag.className = "heading";
+            h1Tag.innerHTML = title;
+            containerTag.appendChild(h1Tag);
 
-                divTag.prepend(div2Tag);
-                divTag.prepend(div3Tag);
-                contestBoard.prepend(divTag);
-            };
+            divTag = document.createElement("div");
+            divTag.className = "contest-info";
+
+            h3Tag = document.createElement("h3");
+            h3Tag.innerHTML = "Description";
+            divTag.appendChild(h3Tag);
+
+            descriptionTag = document.createElement("div");
+            descriptionTag.id = "contest-content description";
+            descriptionTag.className = "contest-description";
+            descriptionTag.setAttribute("original", "<p>" + description + "</p>");
+            descriptionTag.innerHTML = description;
+            divTag.appendChild(descriptionTag);
+
+            var quill = new Quill(descriptionTag, {
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'link']
+                    ]
+                },
+                theme: 'bubble'
+            });
+            quill.on('text-change', function(delta, oldDelta, source) {
+                checkChanges(quill.container, quill.container.childNodes[0]);
+                updateDescription(quill.container, quill.container.id.match(/content\d+/)[0].replace("content", ""));
+            });
+            descriptionTag.childNodes[0].style.width = "88%";
+
+            h3Tag = document.createElement("h3");
+            h3Tag.innerHTML = "Deadline";
+            divTag.appendChild(h3Tag);
+
+            pTag = document.createElement("p");
+            pTag.innerHTML = "All projects must be submitted by <span>" + deadlineFormatted + "</span>.<br><br>";
+            pTag.style = "margin-left: 30px";
+
+            dateTag = document.createElement("input");
+            dateTag.id = "contest-content deadline"
+            dateTag.type = "date";
+            dateTag.setAttribute("original", deadline);
+            dateTag.setAttribute("oninput", "checkChanges(this, this); contests[0].deadline = this.value; this.parentElement.childNodes[1].innerHTML = dateConversion(this.value)")
+            dateTag.setAttribute("value", deadline);
+            pTag.appendChild(dateTag);
+
+            buttonTag = document.createElement("button");
+            buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest-content deadline\"); element.value = element.attributes.original.value; element.oninput()");
+            buttonTag.setAttribute("style", "margin-left: 10px")
+            buttonTag.innerHTML = "Reset date";
+
+            pTag.appendChild(buttonTag);
+            divTag.appendChild(pTag);
+
+            brTag = document.createElement("br");
+            divTag.appendChild(brTag);
+
+            aTag = document.createElement("a");
+            aTag.id = "contest-content link"
+            aTag.className = "contest-link";
+            aTag.setAttribute("target", "_blank");
+            aTag.href = domain + contests[0].link;
+            aTag.innerHTML = "View contest page and submit your entry here.";
+            divTag.appendChild(aTag);
+
+            containerTag.appendChild(divTag);
+            box.prepend(containerTag);
+
+            showContest();
         };
 
         // Adds contests to the contests board
-        function loadContestBoard() {
-            for (var i = 0; i < contests.length; i++) {
-                  createContest();
-            };
-        };
+        createContest();
 
-        loadContestBoard();
+        function showContest() {
+            h2Tag = document.createElement("h2");
+            h2Tag.className = "result-heading heading";
+            h2Tag.innerHTML = "Results";
+            box.appendChild(h2Tag);
 
-        function showContest(i) {
-            document.getElementById("contest-content" + i).style.display = "";
+            divTag = document.createElement("div");
+            divTag.className = "results";
 
-            contentEditable = false;
+            div2Tag = document.createElement("div");
+            div2Tag.className = "winner-box";
 
-            if (contests[i]) {
+            box.appendChild(divTag);
 
-                h2Tag = document.createElement("h2");
-                h2Tag.className = "result-heading heading";
-                h2Tag.innerHTML = "Results";
-                box.appendChild(h2Tag);
+            // Loop through three skill categories
+            for (var category = 0; category < 3; category++) {
+                var winners = Object.values(contests[0].results)[category];
+                var categoryName = Object.keys(contests[0].results)[category];
 
-                divTag = document.createElement("div");
-                divTag.className = "results";
+                h3Tag = document.createElement("h3");
+                h3Tag.innerHTML = (categoryName[0].toUpperCase() + categoryName.slice(1)) + " Bracket";
+                div2Tag.appendChild(h3Tag);
 
-                div2Tag = document.createElement("div");
-                div2Tag.className = "winner-box";
+                // Loop through three entries per category
+                for (var entries = 0; entries < winners.length; entries++) {
+                    winnerClassName = "winning-program";
 
-                box.appendChild(divTag);
-
-                if (i == contests.length-1) {
-                    contentEditable = true;
-                }
-
-                // Loop through three skill categories
-                for (var category = 0; category < 3; category++) {
-                    var winners = Object.values(contests[i].results)[category];
-                    var categoryName = Object.keys(contests[i].results)[category];
-
-                    h3Tag = document.createElement("h3");
-                    h3Tag.innerHTML = (categoryName[0].toUpperCase() + categoryName.slice(1)) + " Bracket";
-                    div2Tag.appendChild(h3Tag);
-
-                    // Loop through three entries per category
-                    for (var entries = 0; entries < winners.length; entries++) {
-                        winnerClassName = "winning-program";
-
-                        if (entries == 0) {
-                            winnerClassName = winnerClassName + " bold-top";
-                        };
-
-                        div3Tag = document.createElement("div");
-                        div3Tag.className = winnerClassName;
-
-                        imgTag = document.createElement("img");
-                        imgTag.src = domain + winners[entries].link + "/latest.png";
-
-                        div3Tag.appendChild(imgTag);
-
-                        pTag = document.createElement("p");
-
-                        aTag = document.createElement("a");
-                        aTag.href = domain + winners[entries].link;
-                        aTag.target = "_blank";
-                        aTag.innerHTML = winners[entries].title || ". . .";
-                        pTag.appendChild(aTag);
-
-                        div3Tag.appendChild(pTag);
-
-                        pTag = document.createElement("p");
-                        pTag.innerHTML = "<strong>Created By:</strong> ";
-
-                        aTag = document.createElement("a");
-                        aTag.href = "https://www.khanacademy.org/profile/" + winners[entries].authorKaid;
-                        aTag.target = "_blank";
-                        aTag.innerHTML = winners[entries].authorName || ". . .";
-                        pTag.appendChild(aTag);
-
-                        div3Tag.appendChild(pTag);
-
-                        pTag = document.createElement("p");
-                        pTag.className = "explanation";
-                        pTag.innerHTML = "<strong>Comments from the judges: </strong><br>";
-
-                        pTag2 = document.createElement("div");
-                        pTag2.style = "font-size:18px;font-family:'Montserrat', serif;line-height:1.7em";
-                        pTag2.setAttribute("original", winners[entries].explanation || "<p>. . .<p>");
-                        pTag2.innerHTML = winners[entries].explanation || ". . .";
-                        pTag.appendChild(pTag2);
-
-                        var quill2 = new Quill(pTag2, {
-                            modules: {
-                                toolbar: [
-                                    ['bold', 'italic', 'underline', 'link']
-                                ]
-                            },
-                            theme: 'bubble'
-                        });
-                        quill2.on('text-change', function(delta, oldDelta, source) {
-                            checkChanges(quill2.container, quill2.container.childNodes[0]);
-                        });
-
-                        div3Tag.appendChild(pTag);
-                        div2Tag.appendChild(div3Tag);
+                    if (entries == 0) {
+                        winnerClassName = winnerClassName + " bold-top";
                     };
+
+                    div3Tag = document.createElement("div");
+                    div3Tag.className = winnerClassName;
+
+                    imgTag = document.createElement("img");
+                    imgTag.src = domain + winners[entries].link + "/latest.png";
+
+                    div3Tag.appendChild(imgTag);
+
+                    pTag = document.createElement("p");
+
+                    aTag = document.createElement("a");
+                    aTag.href = domain + winners[entries].link;
+                    aTag.target = "_blank";
+                    aTag.innerHTML = winners[entries].title || ". . .";
+                    pTag.appendChild(aTag);
+
+                    div3Tag.appendChild(pTag);
+
+                    pTag = document.createElement("p");
+                    pTag.innerHTML = "<strong>Created By:</strong> ";
+
+                    aTag = document.createElement("a");
+                    aTag.href = "https://www.khanacademy.org/profile/" + winners[entries].authorKaid;
+                    aTag.target = "_blank";
+                    aTag.innerHTML = winners[entries].authorName || ". . .";
+                    pTag.appendChild(aTag);
+
+                    div3Tag.appendChild(pTag);
+
+                    pTag = document.createElement("p");
+                    pTag.className = "explanation";
+                    pTag.innerHTML = "<strong>Comments from the judges: </strong><br>";
+
+                    pTag2 = document.createElement("div");
+                    pTag2.style = "font-size:18px;font-family:'Montserrat', serif;line-height:1.7em";
+                    pTag2.setAttribute("original", winners[entries].explanation || "<p>. . .<p>");
+                    pTag2.innerHTML = winners[entries].explanation || ". . .";
+                    pTag.appendChild(pTag2);
+
+                    var quill2 = new Quill(pTag2, {
+                        modules: {
+                            toolbar: [
+                                ['bold', 'italic', 'underline', 'link']
+                            ]
+                        },
+                        theme: 'bubble'
+                    });
+                    quill2.on('text-change', function(delta, oldDelta, source) {
+                        checkChanges(quill2.container, quill2.container.childNodes[0]);
+                    });
+
+                    div3Tag.appendChild(pTag);
+                    div2Tag.appendChild(div3Tag);
                 };
-                divTag.appendChild(div2Tag);
             };
+            divTag.appendChild(div2Tag);
         };
     </script>
 </html>
