@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Test webpage</title>
+        <title>Contest Editor</title>
         <link href="https://fonts.googleapis.com/css?family=Lato|Montserrat&display=swap" rel="stylesheet">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 
@@ -385,8 +385,9 @@
             }
 
             .contest-description {
-                display: flex;
-                justify-content: center;
+                margin-left: 30px;
+                margin-right: 30px;
+                margin-bottom: 30px;
             }
 
             .result-heading {
@@ -2966,53 +2967,6 @@
             return date.toLocaleString('default', { month: 'long' }) + " " + date.getDate() + ", " + date.getFullYear();
         };
 
-        // Changes styling if an elements content is different from the original content
-        function checkChanges(element, query) {
-            query = query.innerHTML.replace(/<\/p><p><br><\/p><p>/g, "<br><br>");
-            type = "";
-
-            if (element.nodeName.toLowerCase() == "input" && element.type == "date") {
-                query = element.value;
-                type = "date";
-            };
-
-            if (query != element.attributes.original.value.replace(/&/g, "&amp;")) {
-                if (type != "date") {
-                    element.style = "background-color: rgba(255, 205, 0, 0.85)";
-                } else {
-                    element.style = "color: rgb(255, 125, 0)";
-                    element.parentElement.childNodes[1].style = "color: rgb(255, 125, 0)";
-                };
-            } else {
-                element.style = "";
-
-                if (type == "date") {
-                    element.parentElement.childNodes[1].style = "";
-                };
-            };
-        };
-
-        // Process the link and image objects on editing
-        function contestLink(element, i, type) {
-            // Set the dictionary items to the new content
-            if (type == 0) {
-                contests[0].link = element.innerHTML;
-            } else if (type == 1) {
-                contests[0].imageFile = element.innerHTML;
-            };
-
-            // Set the image link
-            document.getElementById("contest" + i + " image").src = domain + contests[0].link + "/" + contests[0].imageFile;
-
-            // Set the contest content link
-            document.getElementById("contest-content" + i + " link").href = contests[0].link;
-        };
-
-        // Update the dictionary with the description and replace links with the correct HTML tag
-        function updateDescription(self, i) {
-            contests[0].description = self.childNodes[0].innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/<\/p><p><br><\/p><p>/g, "<br><br>")
-        }
-
         function createContest() {
             deadline = contests[0].deadline;
             deadlineFormatted = dateConversion(contests[0].deadline);
@@ -3036,13 +2990,14 @@
             titleTag.id = "contest title"
             titleTag.setAttribute("spellcheck", "false");
             titleTag.setAttribute("original", title);
+            titleTag.setAttribute("style", "font-weight:bold;")
             titleTag.innerHTML = "<b>" + title + "</b>";
             divTag.appendChild(titleTag);
 
             var quillTitleTag = new Quill(titleTag);
             quillTitleTag.on('text-change', function(delta, oldDelta, source) {
-                element = quillTitleTag.container.childNodes[0].childNodes[0]
-                parent = quillTitleTag.container
+                element = quillTitleTag.container.childNodes[0].childNodes[0];
+                parent = quillTitleTag.container;
 
                 if (element.innerText != parent.attributes.original.value) {
                     element.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
@@ -3056,67 +3011,51 @@
             quillTitleTag.container.childNodes[0].style.textAlign = "center";
             quillTitleTag.container.childNodes[0].style.fontSize = "14px";
 
-            div2Tag = document.createElement("div");
-            div2Tag.setAttribute("style", "position: relative;justify-content: center;display: flex;");
+            // Image
 
-            div3Tag = document.createElement("div");
-            div3Tag.setAttribute("style", "position: absolute;width: 100%;margin-top: 8px;");
+            imageTag = document.createElement("img");
+            imageTag.id = "contest image";
+            imageTag.src = domain + image;
 
-            linkTag = document.createElement("div");
-            linkTag.id = "contest link";
-            linkTag.className = "link-editable";
-            linkTag.setAttribute("spellcheck", "false");
-            linkTag.setAttribute("original", contests[0].link);
-            linkTag.innerHTML = contests[0].link;
-            div3Tag.appendChild(linkTag);
+            imageContainer = document.createElement("div");
+            imageContainer.id = "contest image";
+            imageContainer.setAttribute("spellcheck", "false");
+            imageContainer.setAttribute("original", domain + image);
+            imageContainer.appendChild(imageTag);
+            divTag.appendChild(imageContainer);
 
-            var quillLinkTag = new Quill(linkTag);
-            quillLinkTag.on('text-change', function(delta, oldDelta, source) {
-                element = quillLinkTag.container.childNodes[0].childNodes[0]
-                parent = quillLinkTag.container
+            var quillImageTag = new Quill(imageContainer);
+            quillImageTag.on('text-change', function(delta, oldDelta, source) {
+                element = quillImageTag.container.childNodes[0].childNodes[0];
+                parent = quillImageTag.container;
 
-                if (element.innerText != parent.attributes.original.value) {
-                    element.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
-                } else {
-                    element.removeAttribute("style");
+                // Verify that only one node exists and it is an image tag
+                if (element.childNodes.length == 1 && element.childNodes[0].nodeName == "IMG") {
+                    src = element.childNodes[0].src;
+
+                    contests[0].link = src.split("/").slice(4, -1).join("/");
+                    contests[0].imageFile = src.split("/").slice(-1)[0];
+
+                    // Check if image is different from original
+                    if (src != parent.attributes.original.value) {
+                        element.parentNode.parentNode.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
+                    } else {
+                        element.parentNode.parentNode.removeAttribute("style");
+                    }
                 }
 
-                contests[0].link = element.innerText;
-                document.getElementById("contest image").src = domain + element.innerText + "/" + contests[0].imageFile;
+                // Prevent any other content
+                element.parentNode.innerHTML = "<p></p>";
+                element = quillImageTag.container.childNodes[0].childNodes[0];
+                element.innerHTML = ""
+                imageTag.src = domain + contests[0].link + "/" + contests[0].imageFile;
+                element.appendChild(imageTag);
+
+                document.getElementById("contest-content link").href = domain + contests[0].link;
+
             });
-            quillLinkTag.container.childNodes[0].style.textAlign = "center";
-            quillLinkTag.container.childNodes[0].style.fontSize = "14px";
-
-            pTag = document.createElement("p");
-            pTag.id = "contest imageFile";
-            pTag.className = "link-editable";
-            pTag.setAttribute("spellcheck", "false");
-            pTag.setAttribute("original", contests[0].imageFile);
-            pTag.setAttribute("oninput", "checkChanges(this, this); contestLink(this, 0, 1)");
-            pTag.innerHTML = contests[0].imageFile;
-            div3Tag.appendChild(pTag);
-
-            div2Tag.appendChild(div3Tag);
-            divTag.appendChild(div2Tag);
-
-            imgTag = document.createElement("img");
-            imgTag.id = "contest image";
-            imgTag.src = "https://www.khanacademy.org/computer-programming/" + image;
-            divTag.appendChild(imgTag);
-
-            brTag = document.createElement("br");
-            divTag.appendChild(brTag);
-
-            buttonTag = document.createElement("button");
-            buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest title\"); element.innerHTML = element.attributes.original.value; element.oninput()");
-            buttonTag.innerHTML = "Reset title";
-            divTag.appendChild(buttonTag);
-
-            buttonTag = document.createElement("button");
-            buttonTag.setAttribute("style", "margin-left: 20px");
-            buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest link\"); element.innerHTML = element.attributes.original.value; element.oninput(); element2 = document.getElementById(\"contest imageFile\"); element2.innerHTML = element2.attributes.original.value; element2.oninput()");
-            buttonTag.innerHTML = "Reset link";
-            divTag.appendChild(buttonTag);
+            quillImageTag.container.childNodes[0].style.display = "flex";
+            quillImageTag.container.childNodes[0].style.justifyContent = "center";
 
             spanTag = document.createElement("span");
             spanTag.className = "contest-tag unselectable";
@@ -3139,11 +3078,11 @@
             containerTag = document.createElement("div");
             containerTag.id = "contest-content";
 
-            h1Tag = document.createElement("h1");
-            h1Tag.id = "contest-content title"
-            h1Tag.className = "heading";
-            h1Tag.innerHTML = title;
-            containerTag.appendChild(h1Tag);
+            title2Tag = document.createElement("h1");
+            title2Tag.id = "contest-content title"
+            title2Tag.className = "heading";
+            title2Tag.innerHTML = title;
+            containerTag.appendChild(title2Tag);
 
             divTag = document.createElement("div");
             divTag.className = "contest-info";
@@ -3155,11 +3094,11 @@
             descriptionTag = document.createElement("div");
             descriptionTag.id = "contest-content description";
             descriptionTag.className = "contest-description";
-            descriptionTag.setAttribute("original", "<p>" + description + "</p>");
+            descriptionTag.setAttribute("original", description);
             descriptionTag.innerHTML = description;
             divTag.appendChild(descriptionTag);
 
-            var quill = new Quill(descriptionTag, {
+            var quillDescription = new Quill(descriptionTag, {
                 modules: {
                     toolbar: [
                         ['bold', 'italic', 'underline', 'link']
@@ -3167,46 +3106,70 @@
                 },
                 theme: 'bubble'
             });
-            quill.on('text-change', function(delta, oldDelta, source) {
-                checkChanges(quill.container, quill.container.childNodes[0]);
-                updateDescription(quill.container, quill.container.id.match(/content\d+/)[0].replace("content", ""));
+            quillDescription.on('text-change', function(delta, oldDelta, source) {
+                element = quillDescription.container.childNodes[0];
+                parent = quillDescription.container;
+
+                elementHTML = element.innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/<\/p><p><br><\/p><p>/g, "<br><br>");
+
+                if (elementHTML.slice(3, -4) != parent.attributes.original.value) {
+                    element.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
+                } else {
+                    element.removeAttribute("style");
+                }
+
+                contests[0].description = elementHTML.slice(3, -4);
             });
-            descriptionTag.childNodes[0].style.width = "88%";
 
             h3Tag = document.createElement("h3");
             h3Tag.innerHTML = "Deadline";
             divTag.appendChild(h3Tag);
 
             pTag = document.createElement("p");
-            pTag.innerHTML = "All projects must be submitted by <span>" + deadlineFormatted + "</span>.<br><br>";
-            pTag.style = "margin-left: 30px";
+            pTag.innerHTML = "All projects must be submitted by <span id='dateReal'>" + deadlineFormatted + "</span>.<br><br>";
+            pTag.style = "margin-left: 30px;margin-bottom: 30px;";
 
             dateTag = document.createElement("input");
             dateTag.id = "contest-content deadline"
             dateTag.type = "date";
             dateTag.setAttribute("original", deadline);
-            dateTag.setAttribute("oninput", "checkChanges(this, this); contests[0].deadline = this.value; this.parentElement.childNodes[1].innerHTML = dateConversion(this.value)")
             dateTag.setAttribute("value", deadline);
+            dateTag.oninput = function() {
+                element = document.getElementById("contest-content deadline");
+
+                if (element.value != element.attributes.original.value) {
+                    element.style.color = "rgba(255, 125, 0)";
+                } else {
+                    element.removeAttribute("style");
+                }
+
+                contests[0].deadline = element.value;
+                document.getElementById("dateReal").innerText = dateConversion(element.value);
+            };
             pTag.appendChild(dateTag);
 
             buttonTag = document.createElement("button");
-            buttonTag.setAttribute("onclick", "element = document.getElementById(\"contest-content deadline\"); element.value = element.attributes.original.value; element.oninput()");
             buttonTag.setAttribute("style", "margin-left: 10px")
             buttonTag.innerHTML = "Reset date";
+            buttonTag.onclick = function() {
+                element = document.getElementById("contest-content deadline");
+
+                element.value = element.attributes.original.value;
+                element.removeAttribute("style");
+                contests[0].deadline = element.value;
+                document.getElementById("dateReal").innerText = dateConversion(element.value);
+            };
 
             pTag.appendChild(buttonTag);
             divTag.appendChild(pTag);
 
-            brTag = document.createElement("br");
-            divTag.appendChild(brTag);
-
-            aTag = document.createElement("a");
-            aTag.id = "contest-content link"
-            aTag.className = "contest-link";
-            aTag.setAttribute("target", "_blank");
-            aTag.href = domain + contests[0].link;
-            aTag.innerHTML = "View contest page and submit your entry here.";
-            divTag.appendChild(aTag);
+            contestLinkTag = document.createElement("a");
+            contestLinkTag.id = "contest-content link"
+            contestLinkTag.className = "contest-link";
+            contestLinkTag.setAttribute("target", "_blank");
+            contestLinkTag.href = domain + contests[0].link;
+            contestLinkTag.innerHTML = "View contest page and submit your entry here.";
+            divTag.appendChild(contestLinkTag);
 
             containerTag.appendChild(divTag);
             box.prepend(containerTag);
@@ -3214,7 +3177,6 @@
             showContest();
         };
 
-        // Adds contests to the contests board
         createContest();
 
         function showContest() {
