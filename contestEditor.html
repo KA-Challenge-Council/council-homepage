@@ -70,6 +70,13 @@
                 color: #5FAFFF;
             }
 
+            a.disabled {
+              pointer-events: none;
+              cursor: default;
+              text-decoration: none;
+              color: unset;
+            }
+
             nav {
                 position: fixed;
                 background-color: #0A2A66;
@@ -423,8 +430,13 @@
             }
 
             .winning-program img, .winning-program-old img {
-                width: 30%;
+                height: 124px;
+                width: 124px;
                 border: 1px solid lightgrey;
+            }
+
+            .image-container {
+                width: 126px;
                 float: left;
                 margin-right: 15px;
             }
@@ -2959,7 +2971,7 @@
     <script>
         var contestBoard = document.getElementById("contest-board");
         var box = document.getElementById("contest");
-        var domain = "https://www.khanacademy.org/computer-programming/";
+        var domain = "https://www.khanacademy.org/";
 
         // Convert the date from YYYY/MM/DD to MONTH DAY, YEAR
         function dateConversion(date) {
@@ -3015,19 +3027,19 @@
 
             imageTag = document.createElement("img");
             imageTag.id = "contest image";
-            imageTag.src = domain + image;
+            imageTag.src = domain + "computer-programming/" + image;
 
             imageContainer = document.createElement("div");
-            imageContainer.id = "contest image";
+            imageContainer.id = "contest image-container";
             imageContainer.setAttribute("spellcheck", "false");
-            imageContainer.setAttribute("original", domain + image);
+            imageContainer.setAttribute("original", domain + "computer-programming/" + image);
             imageContainer.appendChild(imageTag);
             divTag.appendChild(imageContainer);
 
             var quillImageTag = new Quill(imageContainer);
             quillImageTag.on('text-change', function(delta, oldDelta, source) {
-                element = quillImageTag.container.childNodes[0].childNodes[0];
                 parent = quillImageTag.container;
+                element = parent.childNodes[0].childNodes[0];
 
                 // Verify that only one node exists and it is an image tag
                 if (element.childNodes.length == 1 && element.childNodes[0].nodeName == "IMG") {
@@ -3045,13 +3057,9 @@
                 }
 
                 // Prevent any other content
-                element.parentNode.innerHTML = "<p></p>";
-                element = quillImageTag.container.childNodes[0].childNodes[0];
-                element.innerHTML = ""
-                imageTag.src = domain + contests[0].link + "/" + contests[0].imageFile;
-                element.appendChild(imageTag);
+                element.parentNode.innerHTML = "<p><img src=\"" + domain + "computer-programming/" + contests[0].link + "/" + contests[0].imageFile + "\"></p>";
 
-                document.getElementById("contest-content link").href = domain + contests[0].link;
+                document.getElementById("contest-content link").href = domain + "computer-programming/" + contests[0].link;
 
             });
             quillImageTag.container.childNodes[0].style.display = "flex";
@@ -3136,11 +3144,14 @@
             dateTag.setAttribute("value", deadline);
             dateTag.oninput = function() {
                 element = document.getElementById("contest-content deadline");
+                dTag = document.getElementById("dateReal");
 
                 if (element.value != element.attributes.original.value) {
                     element.style.color = "rgba(255, 125, 0)";
+                    dTag.style.color = "rgba(255, 125, 0)";
                 } else {
                     element.removeAttribute("style");
+                    dTag.removeAttribute("style");
                 }
 
                 contests[0].deadline = element.value;
@@ -3156,6 +3167,7 @@
 
                 element.value = element.attributes.original.value;
                 element.removeAttribute("style");
+                dTag.removeAttribute("style");
                 contests[0].deadline = element.value;
                 document.getElementById("dateReal").innerText = dateConversion(element.value);
             };
@@ -3167,7 +3179,7 @@
             contestLinkTag.id = "contest-content link"
             contestLinkTag.className = "contest-link";
             contestLinkTag.setAttribute("target", "_blank");
-            contestLinkTag.href = domain + contests[0].link;
+            contestLinkTag.href = domain + "computer-programming/" + contests[0].link;
             contestLinkTag.innerHTML = "View contest page and submit your entry here.";
             divTag.appendChild(contestLinkTag);
 
@@ -3179,7 +3191,113 @@
 
         createContest();
 
+        function checkChanges(element) {
+            quill = Quill.find(element)
+            quill.on('text-change', function(delta, oldDelta, source) {
+                element = quill.container.childNodes[0].childNodes[0];
+                parent = quill.container;
+
+                element.parentNode.parentNode.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
+                // Verify that only one node exists and it is an image tag
+                if (element.childNodes.length == 1 && element.childNodes[0].nodeName == "IMG") {
+                    src = element.childNodes[0].src;
+
+                    // Check if image is different from original
+                    if (src != parent.attributes.original.value) {
+                        element.parentNode.parentNode.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
+                    } else {
+                        element.parentNode.parentNode.removeAttribute("style");
+                    }
+                }
+            });
+        }
+
+        function resultImage(editor) {
+            parent = editor.container;
+            element = parent.childNodes[0].childNodes[0];
+            resultid = parent.attributes.resultid.value.split("-");
+            result = contests[0].results[resultid[0]][parseInt(resultid[1])];
+
+            title = document.getElementById("contest-results " + parent.id.split(" ")[1] + " projectTitle");
+            author = document.getElementById("contest-results " + parent.id.split(" ")[1] + " author");
+
+            // Verify that only one node exists and it is an image tag
+            if (element.childNodes.length == 1 && element.childNodes[0].nodeName == "IMG") {
+                src = element.childNodes[0].src;
+
+                result.link = src.split("/").slice(4, -1).join("/");
+
+                if (result.link !== "welcome-to-contests/5745407636209664") {
+                    $.getJSON("https://www.khanacademy.org/api/labs/scratchpads/" + result.link.split("/")[1] + "?callback=?", function(apidata) {
+                        result.title = apidata.title;
+                        result.authorKaid = apidata.kaid;
+                        $.getJSON("https://www.khanacademy.org/api/internal/user/profile?kaid=" + apidata.kaid + "&callback=?", function(apidata2) {
+                            result.authorName = apidata2.nickname;
+
+                            title.className = "";
+                            author.className = "";
+
+                            title.innerText = result.title;
+                            title.href = domain + "computer-programming/" + result.link;
+                            author.innerText = result.authorName;
+                            author.href = "https://www.khanacademy.org/profile/" + result.authorKaid;
+                        });
+                    });
+                } else {
+                    result.title = "";
+                    result.authorKaid = "";
+                    result.authorName = "";
+                    title.innerHTML = "&nbsp;";
+                    title.href = "";
+                    author.innerHTML = "&nbsp;";
+                    author.href = "";
+
+                    title.className = "disabled";
+                    author.className = "disabled";
+                }
+
+                // Check if image is different from original
+                if (src != parent.attributes.original.value) {
+                    element.parentNode.parentNode.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
+                } else {
+                    element.parentNode.parentNode.removeAttribute("style");
+                }
+            }
+
+            // Prevent any other content
+            element.parentNode.innerHTML = "<p><img src=\"" + domain + "computer-programming/" + result.link + "/latest.png" + "\"></p>";
+
+            // If template, then set link to nothing
+            if (result.link == "welcome-to-contests/5745407636209664") {
+                result.link = "";
+            }
+        };
+
+        function resultDesc(editor) {
+            parent = editor.container;
+            element = parent.childNodes[0].childNodes[0];
+            resultid = parent.attributes.resultid.value.split("-");
+            result = contests[0].results[resultid[0]][parseInt(resultid[1])];
+
+            elementHTML = element.innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/<\/p><p><br><\/p><p>/g, "<br><br>");
+
+            if (elementHTML != parent.attributes.original.value) {
+                element.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
+            } else {
+                element.removeAttribute("style");
+            }
+
+            if (elementHTML != ". . .") {
+                result.explanation = elementHTML;
+            } else {
+                result.explanation = "";
+            }
+        }
+
         function showContest() {
+            var editors = [];
+            program = 0;
+
             h2Tag = document.createElement("h2");
             h2Tag.className = "result-heading heading";
             h2Tag.innerHTML = "Results";
@@ -3213,17 +3331,31 @@
                     div3Tag = document.createElement("div");
                     div3Tag.className = winnerClassName;
 
-                    imgTag = document.createElement("img");
-                    imgTag.src = domain + winners[entries].link + "/latest.png";
+                    image2Tag = document.createElement("img");
+                    image2Tag.src = "https://www.khanacademy.org/computer-programming/welcome-to-contests/5745407636209664/latest.png";
 
-                    div3Tag.appendChild(imgTag);
+                    image2Container = document.createElement("div");
+                    image2Container.id = "contest-results " + program + " image-container";
+                    image2Container.className = "image-container"
+                    image2Container.setAttribute("spellcheck", "false");
+                    if (contests[0].results[categoryName][entries].link) {
+                        image2Container.setAttribute("original", domain + "computer-programming/" + winners[entries].link + "/latest.png");
+                    } else {
+                        image2Container.setAttribute("original", "https://www.khanacademy.org/computer-programming/welcome-to-contests/5745407636209664/latest.png");
+                    }
+                    image2Container.setAttribute("resultid", categoryName + "-" + entries);
+
+                    image2Container.appendChild(image2Tag);
+                    div3Tag.appendChild(image2Container);
 
                     pTag = document.createElement("p");
 
                     aTag = document.createElement("a");
-                    aTag.href = domain + winners[entries].link;
+                    aTag.id = "contest-results " + program + " projectTitle";
+                    aTag.className = "disabled";
+                    aTag.href = domain + "computer-programming/" + winners[entries].link;
                     aTag.target = "_blank";
-                    aTag.innerHTML = winners[entries].title || ". . .";
+                    aTag.innerHTML = winners[entries].title || "&nbsp;";
                     pTag.appendChild(aTag);
 
                     div3Tag.appendChild(pTag);
@@ -3232,9 +3364,11 @@
                     pTag.innerHTML = "<strong>Created By:</strong> ";
 
                     aTag = document.createElement("a");
+                    aTag.id = "contest-results " + program + " author";
+                    aTag.className = "disabled";
                     aTag.href = "https://www.khanacademy.org/profile/" + winners[entries].authorKaid;
                     aTag.target = "_blank";
-                    aTag.innerHTML = winners[entries].authorName || ". . .";
+                    aTag.innerHTML = winners[entries].authorName || "&nbsp;";
                     pTag.appendChild(aTag);
 
                     div3Tag.appendChild(pTag);
@@ -3243,29 +3377,68 @@
                     pTag.className = "explanation";
                     pTag.innerHTML = "<strong>Comments from the judges: </strong><br>";
 
-                    pTag2 = document.createElement("div");
-                    pTag2.style = "font-size:18px;font-family:'Montserrat', serif;line-height:1.7em";
-                    pTag2.setAttribute("original", winners[entries].explanation || "<p>. . .<p>");
-                    pTag2.innerHTML = winners[entries].explanation || ". . .";
-                    pTag.appendChild(pTag2);
-
-                    var quill2 = new Quill(pTag2, {
-                        modules: {
-                            toolbar: [
-                                ['bold', 'italic', 'underline', 'link']
-                            ]
-                        },
-                        theme: 'bubble'
-                    });
-                    quill2.on('text-change', function(delta, oldDelta, source) {
-                        checkChanges(quill2.container, quill2.container.childNodes[0]);
-                    });
+                    explanationTag = document.createElement("div");
+                    explanationTag.id = "contest-results " + program + " description";
+                    explanationTag.style = "font-size:18px;font-family:'Montserrat', serif;line-height:1.7em";
+                    explanationTag.setAttribute("original", winners[entries].explanation || ". . .");
+                    explanationTag.innerHTML = winners[entries].explanation || ". . .";
+                    explanationTag.setAttribute("resultid", categoryName + "-" + entries);
+                    pTag.appendChild(explanationTag);
 
                     div3Tag.appendChild(pTag);
                     div2Tag.appendChild(div3Tag);
+
+                    program += 1;
                 };
             };
             divTag.appendChild(div2Tag);
+
+            // Inefficient; need to find another method
+            quillResult0Img = new Quill(document.getElementById("contest-results 0 image-container"))
+            quillResult0Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult0Img) });
+            quillResult0Desc = new Quill(document.getElementById("contest-results 0 description"))
+            quillResult0Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult0Desc) });
+
+            quillResult1Img = new Quill(document.getElementById("contest-results 1 image-container"))
+            quillResult1Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult1Img) });
+            quillResult1Desc = new Quill(document.getElementById("contest-results 1 description"))
+            quillResult1Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult1Desc) });
+
+            quillResult2Img = new Quill(document.getElementById("contest-results 2 image-container"))
+            quillResult2Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult2Img) });
+            quillResult2Desc = new Quill(document.getElementById("contest-results 2 description"))
+            quillResult2Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult2Desc) });
+
+            quillResult3Img = new Quill(document.getElementById("contest-results 3 image-container"))
+            quillResult3Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult3Img) });
+            quillResult3Desc = new Quill(document.getElementById("contest-results 3 description"))
+            quillResult3Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult3Desc) });
+
+            quillResult4Img = new Quill(document.getElementById("contest-results 4 image-container"))
+            quillResult4Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult4Img) });
+            quillResult4Desc = new Quill(document.getElementById("contest-results 4 description"))
+            quillResult4Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult4Desc) });
+
+            quillResult5Img = new Quill(document.getElementById("contest-results 5 image-container"))
+            quillResult5Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult5Img) });
+            quillResult5Desc = new Quill(document.getElementById("contest-results 5 description"))
+            quillResult5Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult5Desc) });
+
+            quillResult6Img = new Quill(document.getElementById("contest-results 6 image-container"))
+            quillResult6Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult6Img) });
+            quillResult6Desc = new Quill(document.getElementById("contest-results 6 description"))
+            quillResult6Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult6Desc) });
+
+            quillResult7Img = new Quill(document.getElementById("contest-results 7 image-container"))
+            quillResult7Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult7Img) });
+            quillResult7Desc = new Quill(document.getElementById("contest-results 7 description"))
+            quillResult7Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult7Desc) });
+
+            quillResult8Img = new Quill(document.getElementById("contest-results 8 image-container"))
+            quillResult8Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult8Img) });
+            quillResult8Desc = new Quill(document.getElementById("contest-results 8 description"))
+            quillResult8Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult8Desc) });
         };
+
     </script>
 </html>
