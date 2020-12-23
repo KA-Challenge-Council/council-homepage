@@ -3097,7 +3097,16 @@
 
             h3Tag = document.createElement("h3");
             h3Tag.innerHTML = "Description";
+            h3Tag.style = "display: inline-block;width: unset;";
+
+            buttonTag = document.createElement("button");
+            buttonTag.innerHTML = "Convert HTML to text";
+            buttonTag.onclick = function() {
+                descriptionTag.childNodes[0].innerHTML = descriptionTag.childNodes[0].textContent.replace(/<br><br>/g, "<br>");
+            };
+
             divTag.appendChild(h3Tag);
+            divTag.appendChild(buttonTag);
 
             descriptionTag = document.createElement("div");
             descriptionTag.id = "contest-content description";
