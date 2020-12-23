@@ -619,7 +619,7 @@
     **/
 
     // TEMP
-    var contests = [
+    /**var contests = [
         {
             "title": "Bird Seed Factory",
             "link": "contest-bird-seed-factory\/4894927375515648",
@@ -701,8 +701,111 @@
                 ]
             }
         }
+    ]**/
+    var contests = [
+        {
+            "title": "Useful Application",
+            "link": "contest-useful-application\/4847529752346624",
+            "imageFile": "latest.png",
+            "isCurrent": false,
+            "contestIsVisible": true,
+            "resultsAreVisible": true,
+            "description": "All around us, there are tools created by man. We are surrounded by so many applications that most of them completely escape our attention. Some applications are created for specific tasks, while others can help us with almost everything. Computers and technology are advancing at such a remarkable pace that we can now create computer programs to complete almost anything electronically.<br><br>For this contest, create a useful program that helps accomplish a common task. This includes applications in the range from something as simple as a planner or stopwatch to anything as advanced as a decryption tool or sprite tool, and beyond!<br><br> We will be accepting both HTML\/CSS and PJS projects for this contest. If you would like to submit an HTML entry, visit the <a href = 'https:\/\/www.khanacademy.org\/computer-programming\/contest-useful-application\/4559313606361088' target = '_blank'>HTML Entry Page<\/a>.<br><br>The deadline for this contest is October 24, 2020. We will judge in the week after that, and award based on creativity, complexity, and clean, commented code. There will be at least one winner per skill bracket for each language. The selected winners will receive a Golden Winston.<br><br>Attribute any parts of your code you didn't write, and most importantly, have fun!",
+            "deadline": "2020-10-24",
+            "results": {
+                "advanced": [
+                    {
+                        "link": "mindmap\/5373612526354432",
+                        "title": "MindMap",
+                        "authorName": "Jam0708",
+                        "authorKaid": "kaid_684064714307603949888221",
+                        "explanation": "This program is very useful and creative, and has excellent features. We loved the user interface and extremely well-organized and commented code!"
+                    },
+                    {
+                        "link": "vector-art-maker-10\/5629933305675776",
+                        "title": "Vector Art Maker 1.0",
+                        "authorName": "SKY",
+                        "authorKaid": "kaid_59991837997505661983736",
+                        "explanation": "This vector art maker is easy to use and contains many useful features, as well as having well-organized and commented code. Well done!"
+                    },
+                    {
+                        "link": "ka-search-contest-submission\/5263884573032448",
+                        "title": "KA Search",
+                        "authorName": "Lone Ninja",
+                        "authorKaid": "kaid_1186543978601773215048782",
+                        "explanation": "We loved the originality and usefulness of this program! It also had a very nice user interface and advanced options."
+                    },
+                    {
+                        "link": "converter\/6343343945236480",
+                        "title": "Converter",
+                        "authorName": "Daniel R",
+                        "authorKaid": "kaid_796293068309285208237430",
+                        "explanation": "This is a very practical and useful converter, with good user interaction! We liked the multiple conversion options and clean, organized code."
+                    }
+                ],
+                "intermediate": [
+                    {
+                        "link": "sketchpad\/5006241551302656",
+                        "title": "Sketchpad",
+                        "authorName": "Prisha",
+                        "authorKaid": "kaid_861909786767545381407237",
+                        "explanation": "This program is a great drawing tool, with lots of features to customize your drawing. The code is well-commented and very organized!"
+                    },
+                    {
+                        "link": "math-practice-the-ultimate-math-tool\/6584697338150912",
+                        "title": "Math Practice || The ultimate math tool",
+                        "authorName": "LeaferStudios",
+                        "authorKaid": "kaid_553656479258879622339276",
+                        "explanation": "This program has a great user interface and well-organized code. We loved the different practice options and usability!"
+                    },
+                    {
+                        "link": "mirror-paint-v2\/6237689123913728",
+                        "title": "Mirror Paint! v2",
+                        "authorName": "totoro.is.my.neighbour",
+                        "authorKaid": "kaid_255968679935383204444592",
+                        "explanation": "This is a very creative and fun drawing program that can create some interesting designs!"
+                    },
+                    {
+                        "link": "notes\/5154286802780160",
+                        "title": "Notes.",
+                        "authorName": "CodeXRed ッ",
+                        "authorKaid": "kaid_872610279239395011992876",
+                        "explanation": "This program has lots of user-friendly options and settings, as well as a nice user interface and organized code. Great work!"
+                    }
+                ],
+                "beginner": [
+                    {
+                        "link": "xy-graph-tool\/4726006037561344",
+                        "title": "XY Graph Tool",
+                        "authorName": "CuriousCoder",
+                        "authorKaid": "kaid_1032353717455773691615176",
+                        "explanation": "This program features a useful graph that can be helpful in mapping out coordinates, as well as a good use of user interaction. Well done!"
+                    },
+                    {
+                        "link": "flash-card-generator\/6240863497961472",
+                        "title": "FLASH-CARD GENERATOR",
+                        "authorName": "ᴍᴀʀᴠᴇʟ456",
+                        "authorKaid": "kaid_600977083891570199749456",
+                        "explanation": "This program has a clean layout and practical uses. We really liked the ability to customize your questions\/answers and change the styling!"
+                    },
+                    {
+                        "link": "quote-randomizer-based-on-emotions\/4859044704239616",
+                        "title": "Quote Randomizer Based on Emotions!",
+                        "authorName": "sheilachambers7",
+                        "authorKaid": "kaid_119041832600519999890350",
+                        "explanation": "This is a really nice, creative program with many positive well thought-out messages. The code is also clean and well-organized."
+                    },
+                    {
+                        "link": "exacto-clock-contest-entry\/6202795011817472",
+                        "title": "Exacto - Clock",
+                        "authorName": "Mr. Winston",
+                        "authorKaid": "kaid_291975009102844517362394",
+                        "explanation": "This program is a very useful clock, with accurate times, dates, and holidays. Great job!"
+                    }
+                ]
+            }
+        }
     ]
-
 
     // json = JSON.stringify(contests).replace(/\//g, "\\/")
     // START JSON - DO NOT REMOVE
@@ -3078,6 +3181,11 @@
                 document.getElementById("contest").classList.toggle("current-contest");
             };
 
+            if (!isCurrent) {
+                spanTag.classList.toggle("previous");
+                spanTag.innerHTML = (!Array.from(spanTag.classList).includes("previous") ? "CURRENT CONTEST" : "PREVIOUS CONTEST");
+            }
+
             divTag.appendChild(spanTag);
 
             contestBoard.prepend(divTag);
@@ -3341,13 +3449,17 @@
                     div3Tag.className = winnerClassName;
 
                     image2Tag = document.createElement("img");
-                    image2Tag.src = "https://www.khanacademy.org/computer-programming/welcome-to-contests/5745407636209664/latest.png";
+                    if (winners[entries].link) {
+                        image2Tag.src = domain + "computer-programming/" + winners[entries].link + "/latest.png";
+                    } else {
+                        image2Tag.src = "https://www.khanacademy.org/computer-programming/welcome-to-contests/5745407636209664/latest.png";
+                    }
 
                     image2Container = document.createElement("div");
                     image2Container.id = "contest-results " + program + " image-container";
                     image2Container.className = "image-container"
                     image2Container.setAttribute("spellcheck", "false");
-                    if (contests[0].results[categoryName][entries].link) {
+                    if (winners[entries].link) {
                         image2Container.setAttribute("original", domain + "computer-programming/" + winners[entries].link + "/latest.png");
                     } else {
                         image2Container.setAttribute("original", "https://www.khanacademy.org/computer-programming/welcome-to-contests/5745407636209664/latest.png");
@@ -3361,7 +3473,9 @@
 
                     aTag = document.createElement("a");
                     aTag.id = "contest-results " + program + " projectTitle";
-                    aTag.className = "disabled";
+                    if (!winners[entries].link) {
+                        aTag.className = "disabled";
+                    }
                     aTag.href = domain + "computer-programming/" + winners[entries].link;
                     aTag.target = "_blank";
                     aTag.innerHTML = winners[entries].title || "&nbsp;";
@@ -3374,7 +3488,9 @@
 
                     aTag = document.createElement("a");
                     aTag.id = "contest-results " + program + " author";
-                    aTag.className = "disabled";
+                    if (!winners[entries].link) {
+                        aTag.className = "disabled";
+                    }
                     aTag.href = "https://www.khanacademy.org/profile/" + winners[entries].authorKaid;
                     aTag.target = "_blank";
                     aTag.innerHTML = winners[entries].authorName || "&nbsp;";
