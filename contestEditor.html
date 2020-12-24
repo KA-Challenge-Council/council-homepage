@@ -3565,5 +3565,14 @@
             quillResult8Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult8Desc) });
         };
 
+        buttonTag = document.createElement("button");
+        buttonTag.innerHTML = "Log contest data in console";
+        buttonTag.style = "width:100%; height: 50px; margin-bottom: 20px"
+        buttonTag.onclick = function() {
+            console.clear();
+            console.log(JSON.stringify(contests[0], null, 2));
+        };
+        body.appendChild(buttonTag)
+
     </script>
 </html>
