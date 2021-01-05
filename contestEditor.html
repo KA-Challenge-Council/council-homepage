@@ -97,9 +97,9 @@ var contests = [
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 
         <!-- Include stylesheet -->
-        <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.bubble.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.bubble.min.css" rel="stylesheet">
         <!-- Include the Quill library -->
-        <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
         <link href="https://fonts.googleapis.com/css?family=Lato|Montserrat&amp;display=swap" rel="stylesheet">
 
         <style>
@@ -699,7 +699,7 @@ var contests = [
     <script>
         // Startup
         var body = document.querySelector("body");
-        body.style.overflow = "scroll";
+        body.style.overflowY = "scroll";
         document.body.scrollTop = document.documentElement.scrollTop = 0;
     </script>
 
@@ -743,9 +743,9 @@ var contests = [
             var quillTitleTag = new Quill(titleTag);
             quillTitleTag.on('text-change', function(delta, oldDelta, source) {
                 element = quillTitleTag.container.childNodes[0].childNodes[0];
-                parent = quillTitleTag.container;
+                parentContainer = quillTitleTag.container;
 
-                if (element.innerText != parent.attributes.original.value) {
+                if (element.innerText != parentContainer.attributes.original.value) {
                     element.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
                 } else {
                     element.removeAttribute("style");
@@ -772,8 +772,8 @@ var contests = [
 
             var quillImageTag = new Quill(imageContainer);
             quillImageTag.on('text-change', function(delta, oldDelta, source) {
-                parent = quillImageTag.container;
-                element = parent.childNodes[0].childNodes[0];
+                parentContainer = quillImageTag.container;
+                element = parentContainer.childNodes[0].childNodes[0];
 
                 // Verify that only one node exists and it is an image tag
                 if (element.childNodes.length == 1 && element.childNodes[0].nodeName == "IMG") {
@@ -783,7 +783,7 @@ var contests = [
                     contests[0].imageFile = src.split("/").slice(-1)[0];
 
                     // Check if image is different from original
-                    if (src != parent.attributes.original.value) {
+                    if (src != parentContainer.attributes.original.value) {
                         element.parentNode.parentNode.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
                     } else {
                         element.parentNode.parentNode.removeAttribute("style");
@@ -864,11 +864,11 @@ var contests = [
             });
             quillDescription.on('text-change', function(delta, oldDelta, source) {
                 element = quillDescription.container.childNodes[0];
-                parent = quillDescription.container;
+                parentContainer = quillDescription.container;
 
                 elementHTML = element.innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/<\/p><p><br><\/p><p>/g, "<br><br>");
 
-                if (elementHTML.slice(3, -4) != parent.attributes.original.value) {
+                if (elementHTML.slice(3, -4) != parentContainer.attributes.original.value) {
                     element.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
                 } else {
                     element.removeAttribute("style");
@@ -894,7 +894,7 @@ var contests = [
                 element = document.getElementById("contest-content deadline");
                 dTag = document.getElementById("dateReal");
 
-                if (element.value != element.attributes.original.value) {
+                if (element.value && element.value != element.attributes.original.value) {
                     element.style.color = "rgba(255, 125, 0)";
                     dTag.style.color = "rgba(255, 125, 0)";
                 } else {
@@ -902,8 +902,10 @@ var contests = [
                     dTag.removeAttribute("style");
                 }
 
-                contests[0].deadline = dateConversion(element.value);
-                document.getElementById("dateReal").innerText = dateConversion(element.value);
+                if (element.value) {
+                    contests[0].deadline = dateConversion(element.value);
+                    document.getElementById("dateReal").innerText = dateConversion(element.value);
+                }
             };
             pTag.appendChild(dateTag);
 
@@ -916,7 +918,7 @@ var contests = [
                 element.value = element.attributes.original.value;
                 element.removeAttribute("style");
                 dTag.removeAttribute("style");
-                contests[0].deadline = element.value;
+                contests[0].deadline = dateConversion(element.value);
                 document.getElementById("dateReal").innerText = dateConversion(element.value);
             };
 
@@ -943,7 +945,7 @@ var contests = [
             quill = Quill.find(element)
             quill.on('text-change', function(delta, oldDelta, source) {
                 element = quill.container.childNodes[0].childNodes[0];
-                parent = quill.container;
+                parentContainer = quill.container;
 
                 element.parentNode.parentNode.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
                 // Verify that only one node exists and it is an image tag
@@ -951,7 +953,7 @@ var contests = [
                     src = element.childNodes[0].src;
 
                     // Check if image is different from original
-                    if (src != parent.attributes.original.value) {
+                    if (src != parentContainer.attributes.original.value) {
                         element.parentNode.parentNode.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
                     } else {
                         element.parentNode.parentNode.removeAttribute("style");
@@ -961,13 +963,13 @@ var contests = [
         }
 
         function resultImage(editor) {
-            parent = editor.container;
-            element = parent.childNodes[0].childNodes[0];
-            resultid = parent.attributes.resultid.value.split("-");
+            parentContainer = editor.container;
+            element = parentContainer.childNodes[0].childNodes[0];
+            resultid = parentContainer.attributes.resultid.value.split("-");
             result = contests[0].results[resultid[0]][parseInt(resultid[1])];
 
-            title = document.getElementById("contest-results " + parent.id.split(" ")[1] + " projectTitle");
-            author = document.getElementById("contest-results " + parent.id.split(" ")[1] + " author");
+            title = document.getElementById("contest-results " + parentContainer.id.split(" ")[1] + " projectTitle");
+            author = document.getElementById("contest-results " + parentContainer.id.split(" ")[1] + " author");
 
             // Verify that only one node exists and it is an image tag
             if (element.childNodes.length == 1 && element.childNodes[0].nodeName == "IMG") {
@@ -1005,7 +1007,7 @@ var contests = [
                 }
 
                 // Check if image is different from original
-                if (src != parent.attributes.original.value) {
+                if (src != parentContainer.attributes.original.value) {
                     element.parentNode.parentNode.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
                 } else {
                     element.parentNode.parentNode.removeAttribute("style");
@@ -1022,14 +1024,14 @@ var contests = [
         };
 
         function resultDesc(editor) {
-            parent = editor.container;
-            element = parent.childNodes[0].childNodes[0];
-            resultid = parent.attributes.resultid.value.split("-");
+            parentContainer = editor.container;
+            element = parentContainer.childNodes[0].childNodes[0];
+            resultid = parentContainer.attributes.resultid.value.split("-");
             result = contests[0].results[resultid[0]][parseInt(resultid[1])];
 
             elementHTML = element.innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/<\/p><p><br><\/p><p>/g, "<br><br>");
 
-            if (elementHTML != parent.attributes.original.value) {
+            if (elementHTML != parentContainer.attributes.original.value) {
                 element.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
             } else {
                 element.removeAttribute("style");
