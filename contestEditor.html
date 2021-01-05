@@ -1,10 +1,41 @@
 <!DOCTYPE html>
+<!--
+
+Contest Editor
+
+This is a tool to assist in the editing of the official contests on KA.
+The contests JSON data is pasted into the dictionary located
+immediately below.
+
+To edit the contest project (or results images), copy any projects
+image (right-click then "Copy Image"), click on the existing
+image and then press Ctrl+V to paste.
+
+(To undo, simply select the image and press Ctrl+Z)
+(All edited elements will turn orange until reset to their
+original state)
+
+One can also edit the title by writing in the text above,
+and toggle the state of the contest by pressing the small
+button beneath the image.
+
+I have used the Quill.JS inline editor to
+create all of the editable elements in this webpage.
+This allows for a good undo/redo history as well as
+rich text editing features.
+(Try selecting the description text!)
+
+The data is stored for every edit and can be printed into the
+console using the button at the bottom of the webpage.
+
+-->
+
 <html lang="en">
 
     <script>
 
 // Paste contest data here!
-var contests = [
+var contest = [
 {
     title: "Bird Seed Factory",
     link: "https://www.khanacademy.org/computer-programming/contest-bird-seed-factory/4894927375515648",
@@ -689,9 +720,7 @@ var contests = [
             <div id="contest-board"></div>
         </div>
 
-        <!-- Holds the currently displayed contest -->
         <div id="contest" class="content">
-
         </div>
 
     </body>
@@ -703,7 +732,6 @@ var contests = [
         document.body.scrollTop = document.documentElement.scrollTop = 0;
     </script>
 
-    <!-- Populate contests page -->
     <script>
         var contestBoard = document.getElementById("contest-board");
         var box = document.getElementById("contest");
@@ -715,11 +743,11 @@ var contests = [
         };
 
         function createContest() {
-            deadline = contests[0].deadline;
-            title = contests[0].title;
-            description = contests[0].description.replace(/<\/p><p>/g, "<br><br>").replace(/<p>|<\/p>/g, "");
-            image = contests[0].link + "/" + contests[0].imageFile;
-            isCurrent = contests[0].isCurrent;
+            deadline = contest[0].deadline;
+            title = contest[0].title;
+            description = contest[0].description.replace(/<\/p><p>/g, "<br><br>").replace(/<p>|<\/p>/g, "");
+            image = contest[0].link + "/" + contest[0].imageFile;
+            isCurrent = contest[0].isCurrent;
 
             if (isCurrent) {
                 type = " current-contest";
@@ -751,7 +779,7 @@ var contests = [
                     element.removeAttribute("style");
                 }
 
-                contests[0].title = element.innerText;
+                contest[0].title = element.innerText;
                 document.getElementById("contest-content title").innerText = element.innerText;
             });
             quillTitleTag.container.childNodes[0].style.textAlign = "center";
@@ -779,8 +807,8 @@ var contests = [
                 if (element.childNodes.length == 1 && element.childNodes[0].nodeName == "IMG") {
                     src = element.childNodes[0].src;
 
-                    contests[0].link = src.split("/").slice(0, -1).join("/");
-                    contests[0].imageFile = src.split("/").slice(-1)[0];
+                    contest[0].link = src.split("/").slice(0, -1).join("/");
+                    contest[0].imageFile = src.split("/").slice(-1)[0];
 
                     // Check if image is different from original
                     if (src != parentContainer.attributes.original.value) {
@@ -791,9 +819,9 @@ var contests = [
                 }
 
                 // Prevent any other content
-                element.parentNode.innerHTML = "<p><img src=\"" + contests[0].link + "/" + contests[0].imageFile + "\"></p>";
+                element.parentNode.innerHTML = "<p><img src=\"" + contest[0].link + "/" + contest[0].imageFile + "\"></p>";
 
-                document.getElementById("contest-content link").href = contests[0].link;
+                document.getElementById("contest-content link").href = contest[0].link;
 
             });
             quillImageTag.container.childNodes[0].style.display = "flex";
@@ -807,7 +835,7 @@ var contests = [
 
                 element.classList.toggle("previous");
                 element.innerHTML = (!Array.from(element.classList).includes("previous") ? "CURRENT CONTEST" : "PREVIOUS CONTEST");
-                contests[0].isCurrent = !contests[0].isCurrent;
+                contest[0].isCurrent = !contest[0].isCurrent;
 
                 document.getElementById("contest").classList.toggle("current-contest");
             };
@@ -874,7 +902,7 @@ var contests = [
                     element.removeAttribute("style");
                 }
 
-                contests[0].description = elementHTML.replace(/<br><br>/g, "</p><p>");
+                contest[0].description = elementHTML.replace(/<br><br>/g, "</p><p>");
             });
 
             h3Tag = document.createElement("h3");
@@ -903,7 +931,7 @@ var contests = [
                 }
 
                 if (element.value) {
-                    contests[0].deadline = dateConversion(element.value);
+                    contest[0].deadline = dateConversion(element.value);
                     document.getElementById("dateReal").innerText = dateConversion(element.value);
                 }
             };
@@ -918,7 +946,7 @@ var contests = [
                 element.value = element.attributes.original.value;
                 element.removeAttribute("style");
                 dTag.removeAttribute("style");
-                contests[0].deadline = dateConversion(element.value);
+                contest[0].deadline = dateConversion(element.value);
                 document.getElementById("dateReal").innerText = dateConversion(element.value);
             };
 
@@ -929,7 +957,7 @@ var contests = [
             contestLinkTag.id = "contest-content link"
             contestLinkTag.className = "contest-link";
             contestLinkTag.setAttribute("target", "_blank");
-            contestLinkTag.href = contests[0].link;
+            contestLinkTag.href = contest[0].link;
             contestLinkTag.innerHTML = "View contest page and submit your entry here.";
             divTag.appendChild(contestLinkTag);
 
@@ -966,7 +994,7 @@ var contests = [
             parentContainer = editor.container;
             element = parentContainer.childNodes[0].childNodes[0];
             resultid = parentContainer.attributes.resultid.value.split("-");
-            result = contests[0].results[resultid[0]][parseInt(resultid[1])];
+            result = contest[0].results[resultid[0]][parseInt(resultid[1])];
 
             title = document.getElementById("contest-results " + parentContainer.id.split(" ")[1] + " projectTitle");
             author = document.getElementById("contest-results " + parentContainer.id.split(" ")[1] + " author");
@@ -1027,7 +1055,7 @@ var contests = [
             parentContainer = editor.container;
             element = parentContainer.childNodes[0].childNodes[0];
             resultid = parentContainer.attributes.resultid.value.split("-");
-            result = contests[0].results[resultid[0]][parseInt(resultid[1])];
+            result = contest[0].results[resultid[0]][parseInt(resultid[1])];
 
             elementHTML = element.innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/<\/p><p><br><\/p><p>/g, "<br><br>");
 
@@ -1063,8 +1091,8 @@ var contests = [
 
             // Loop through three skill categories
             for (var category = 0; category < 3; category++) {
-                var winners = Object.values(contests[0].results)[category];
-                var categoryName = Object.keys(contests[0].results)[category];
+                var winners = Object.values(contest[0].results)[category];
+                var categoryName = Object.keys(contest[0].results)[category];
 
                 h3Tag = document.createElement("h3");
                 h3Tag.innerHTML = (categoryName[0].toUpperCase() + categoryName.slice(1)) + " Bracket";
@@ -1203,7 +1231,7 @@ var contests = [
         buttonTag.style = "width:100%; height: 50px; margin-bottom: 20px"
         buttonTag.onclick = function() {
             console.clear();
-            console.log(JSON.stringify(contests[0], null, 4).replace(/"([^"]+)":/g, '$1:'));
+            console.log(JSON.stringify(contest[0], null, 4).replace(/"([^"]+)":/g, '$1:'));
         };
         body.appendChild(buttonTag)
 
