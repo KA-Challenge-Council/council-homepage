@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<!--
+
+Contest Editor
+
+This is a tool to assist in the editing of the official contests on KA.
+The contests JSON data is pasted into the dictionary located
+immediately below.
+
+To edit the contest project (or results images), copy any projects
+image (right-click then "Copy Image"), click on the existing
+image and then press Ctrl+V to paste.
+
+(To undo, simply select the image and press Ctrl+Z)
+(All edited elements will turn orange until reset to their
+original state)
+
+One can also edit the title by writing in the text above,
+and toggle the state of the contest by pressing the small
+button beneath the image.
+
+I have used the Quill.JS inline editor to
+create all of the editable elements in this webpage.
+This allows for a good undo/redo history as well as
+rich text editing features.
+(Try selecting the description text!)
+
+The data is stored for every edit and can be printed into the
+console using the button at the bottom of the webpage.
+
+-->
+
+<html lang="en">
+
+    <script>
+
+// Paste contest data here!
+var contest = [
+//START
+{
+    title: "Bird Seed Factory",
+    link: "https://www.khanacademy.org/computer-programming/contest-bird-seed-factory/4894927375515648",
+    imageFile: "latest.png",
+    isCurrent: false,
+    contestIsVisible: true,
+    resultsAreVisible: true,
+    description: "<p>Some students study programming just for the knowledge, and some want to make it a career. For this contest we are going to depart from the normal type of contest to go on an imaginary job interview!</p><p>Walking into a manufacturing company looking for software development work might include the interviewer asking you to sit down and use their computer/software to solve a programming problem. That is what this contest is simulating. An imaginary production equipment manufacturer that makes robotic arms and other production machinery needs a software developer to write the software that is the brains of their production equipment.</p><p>There are three skill levels as listed in the contest code. Pick one (or more) levels and fill in the missing code that will make the machinery do its task. The deadline for this contest is December 26th, 2020. We will judge in the week after that, awarding winners based on creativity, efficiency, and clean, commented code.</p><p>This is a new type of contest and we would welcome your comments and feedback in the Tips & Thanks section below. If there is enough interest, we could add another contest some time next year to perhaps give you a version 1 application, and let you add features or creative improvements to make it a version 2 application, or other such ideas. Feel free to let us know what you think of this contest type (good or bad).</p><p>All entries should be submitted as a spin-off of this project. Attribute any parts of your entry that you didn't write. Most importantly, have fun!</p>",
+    deadline: "December 26, 2020",
+    results: {
+        advanced: [
+            {
+                link: "https://www.khanacademy.org/computer-programming/entry-contest-bird-seed-factory/6311904693403648",
+                title: "Entry - \"Contest: Bird Seed Factory\"",
+                authorName: "SKY",
+                authorKaid: "kaid_59991837997505661983736",
+                explanation: "This program has a nice use of constants and great readability. We also enjoyed how smoothly the program ran."
+            },
+            {
+                link: "https://www.khanacademy.org/computer-programming/bird-seed-factory-advanced-level/6594721995243520",
+                title: "Bird Seed Factory (Advanced Level)",
+                authorName: "steve.ko",
+                authorKaid: "kaid_330947734974068144246677",
+                explanation: "This program has a great use of pseudo-code and runs very efficiently. Great work!"
+            },
+            {
+                link: "https://www.khanacademy.org/computer-programming/contest-bird-seed-factory-all-levels-attempted/5560174884110336",
+                title: "Contest: Bird Seed Factory - All Levels Attempted",
+                authorName: "Prisha B.",
+                authorKaid: "kaid_861909786767545381407237",
+                explanation: "This program has very clean, well-labeled code, and successfully completed all three levels. We also liked how the arm’s state was kept inside an object, which kept things neat and tidy!"
+            }
+        ],
+        intermediate: [
+            {
+                link: "https://www.khanacademy.org/computer-programming/bird-seed-factory-pro/4644777102098432",
+                title: "Bird Seed Factory Pro",
+                authorName: "Krzysztof Ryniec",
+                authorKaid: "kaid_986031622174942658033497",
+                explanation: "This program has a nice use of array functions and sorting, as well as being very efficient and well-commented. Nicely done!"
+            },
+            {
+                link: "https://www.khanacademy.org/computer-programming/spin-off-of-contest-bird-seed-factory/4889055359352832",
+                title: "Spin-off of \"Contest: Bird Seed Factory\"",
+                authorName: "totoro",
+                authorKaid: "kaid_255968679935383204444592",
+                explanation: "This program has an efficient solution and good use of comments. We enjoyed the readability and how well-documented it was."
+            },
+            {
+                link: "https://www.khanacademy.org/computer-programming/contest-bird-seed-factory-intermediate-beginner/5909180467068928",
+                title: "Contest: Bird Seed Factory - Intermediate & Beginner",
+                authorName: "Steven Scho",
+                authorKaid: "kaid_584837848415738471870543",
+                explanation: "This program performs the task well and is nicely commented. We really liked the bag counter feature and easy to follow code!"
+            }
+        ],
+        beginner: [
+            {
+                link: "https://www.khanacademy.org/computer-programming/bird-seed-factorybeginner/5242370939895808",
+                title: "Bird Seed Factory(Beginner)",
+                authorName: "Neon Byte",
+                authorKaid: "kaid_600198987757497388218405",
+                explanation: "This program is efficient and well-labled. We enjoyed the use of the ternary operator!"
+            },
+            {
+                link: "https://www.khanacademy.org/computer-programming/hoppers-bird-seed-factory/6108652457377792",
+                title: "Hopper's Bird Seed Factory",
+                authorName: "Karsten",
+                authorKaid: "kaid_164726218027180586662606",
+                explanation: "This program has very clean code and good use of comments. The changing Hoppers by the hoppers was a very nice touch!"
+            },
+            {
+                link: "https://www.khanacademy.org/computer-programming/bird-seed-factory-finished/4720957992681472",
+                title: "Bird Seed Factory (finished)",
+                authorName: "Akul NG",
+                authorKaid: "kaid_491714214227624749415236",
+                explanation: "This program had very well explained and easy to follow code. Well done!"
+            }
+        ]
+    }
+}
+//END
+]
+
+    </script>
+
+    <head>
+        <meta charset="utf-8">
+        <title>Contest Editor</title>
+        <link href="https://fonts.googleapis.com/css?family=Lato|Montserrat&display=swap" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+        <!-- Include stylesheet -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.bubble.min.css" rel="stylesheet">
+        <!-- Include the Quill library -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Lato|Montserrat&amp;display=swap" rel="stylesheet">
+
+        <style>
+        /* Tell Quill not to scroll */
+        #quill-container {
+            height: auto;
+            min-height: 100%;
+            padding: 50px;
+        }
+        #quill-container .ql-editor {
+            font-size: 18px;
+            overflow-y: visible;
+        }
+
+        .ql-editor {
+            padding: 0;
+            margin: 0;
+        }
+
+        .ql-container {
+            font-family: 'Lato';
+            font-size: 16px;
+            height: auto;
+        }
+
+        .ql-bubble .ql-tooltip {
+            background-color: #1865F2;
+        }
+
+        .ql-bubble .ql-tooltip:not(.ql-flip) .ql-tooltip-arrow {
+            border-bottom-color: #114EB6;
+        }
+
+        .ql-bubble .ql-stroke {
+            stroke: #fff;
+        }
+
+        .ql-bubble .ql-fill, .ql-bubble .ql-stroke.ql-fill {
+            fill: #fff;
+        }
+        </style>
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: serif;
+                font-size: 16px;
+                overflow-x: hidden;
+                background-color: #f7f8fa;
+                overflow: hidden;
+            }
+
+            a {
+                color: #5FAFFF;
+            }
+
+            a.disabled {
+              pointer-events: none;
+              cursor: default;
+              text-decoration: none;
+              color: unset;
+            }
+
+            nav {
+                position: fixed;
+                background-color: #0A2A66;
+                width: 100%;
+                z-index: 10;
+                height: 8%;
+                display: none;
+            }
+
+            nav ul {
+                width: 90%;
+                margin: auto;
+            }
+
+            nav ul li {
+                display: inline-block;
+                margin: 2.5% 7.3%;
+            }
+
+            nav ul li a {
+                color: white;
+                text-decoration: none;
+                font-family: Lato;
+                font-weight: bold;
+            }
+
+            .nav-selected {
+                border-bottom: 1px solid white;
+            }
+
+            .content {
+                transition: transform 0.4s ease;
+                text-align: center;
+                color: white;
+            }
+
+            .active-nav .content {
+                transform: translate3d(200px, 0, 0);
+            }
+
+            #launch {
+                padding-top: 85px;
+                text-align: center;
+                color: white;
+                background-color: #0A2A66;
+                width: 100%;
+                height: 100%;
+                display: block;
+                position: fixed;
+                z-index: 100;
+
+                opacity: 1;
+                -webkit-transition: all 1.0s ease-in-out;
+                -moz-transition: all 1.0s ease-in-out;
+                -ms-transition: all 1.0s ease-in-out;
+                -o-transition: all 1.0s ease-in-out;
+                transition: all 1.0s ease-in-out;
+            }
+
+            #launch-container {
+                height: 51%;
+                width: 85%;
+                margin: auto;
+                position: absolute;
+                top: 27%;
+                left: 7.5%;
+            }
+
+            #launch-heading {
+                width: 85%;
+                height: 24%;
+                position: absolute;
+                top: 1%;
+                left: 7.5%;
+            }
+
+            #launch-heading svg {
+                position: absolute;
+                left: 41%;
+                top: 1%;
+            }
+
+            #launch h1 {
+                font-family: 'Lato';
+                position: absolute;
+                font-size: 39px;
+                width: 100%;
+                top: 59%;
+                left: 0%;
+            }
+
+            #launch #info {
+                display: block;
+                font-family: 'Lato';
+                font-size: 27px;
+                height: 48%;
+                top: 26%;
+                left: 8%;
+                background-color: #37C5FD;
+                border-radius: 5px;
+                padding: 42px 11px;
+            }
+
+            #launch #info p {
+                display: block;
+                margin-top: 2.5%;
+            }
+
+            #launch a {
+                color: white;
+                font-family: 'Lato';
+                font-size: 22px;
+                display: block;
+                background-color: #FA50AE;
+                padding: 12px 214px;
+                border-radius: 5px;
+                margin-top: 10.5%;
+            }
+
+            #launch a:hover {
+                cursor: pointer;
+            }
+
+            .heading {
+                background-color: #1865F2;
+                width: 85%;
+                margin: auto;
+                margin-bottom: 20px;
+                font-family: 'Lato', serif;
+                font-weight: bold;
+                padding: 6px 0px;
+                border-radius: 5px;
+            }
+
+            .news {
+                width: 85%;
+                margin: auto;
+            }
+
+            .news-post {
+                background-color: white;
+                color: black;
+                margin: auto;
+                margin: 20px 0px;
+                border-radius: 5px;
+                border: 1px solid lightgrey;
+                position: relative;
+            }
+
+            .news-title {
+                float: left;
+                clear: left;
+                text-align: left;
+                padding-top: 10px;
+                padding-left: 10px;
+                padding-right: 0px;
+                margin: auto;
+                width: 70%;
+                margin-bottom: 0px;
+                font-family: 'Lato', serif;
+            }
+
+            .news-date {
+                clear: left;
+                width: 95%;
+                margin: auto;
+                border-bottom: 1px solid #21242C;
+                text-align: left;
+                padding: 10px;
+                padding-top: 5px;
+                margin-top: 0px;
+                font-family: 'Montserrat', serif;
+            }
+
+            .news-content {
+                clear: left;
+                margin: auto;
+                width: 95%;
+                text-align: left;
+                padding: 20px 10px;
+                font-family: "Montserrat", serif;
+                line-height: 2em;
+            }
+
+            .new-post {
+                border: 2px solid #1865F2;
+            }
+
+            .news-post.new-post::after {
+                content: "NEW POST";
+                font-weight: bold;
+                font-size: 13px;
+                float: right;
+                clear: right;
+                right: 15px;
+                position: absolute;
+                top: 0;
+                padding: 10px 10px;
+                border: 2px solid #1865F2;
+                border-radius: 0px 0px 10px 10px;
+                border-top: none;
+                font-family: 'Lato';
+                color: #1865F2;
+            }
+
+            #contest-board {
+                width: 85%;
+                margin: auto;
+            }
+
+            .contest-box {
+                position: relative;
+                margin: auto;
+                margin-bottom: 20px;
+                width: 44%;
+                background-color: white;
+                color: #21242C;
+                font-family: 'Lato';
+                font-size: 14px;
+                padding: 10px;
+                padding-bottom: 1.8%;
+                border-radius: 5px;
+                border: 1px solid #5F15F2;
+            }
+
+            .contest-box img {
+                margin-top: 8px;
+                width: 200px;
+                height: 200px;
+            }
+
+            .current-contest {
+                border: 1px solid #1865F2;
+            }
+
+            .contest-tag {
+                font-size: 12px;
+                display: block;
+                border: 2px solid #1865F2;
+                border-radius: 10px;
+                width: 75%;
+                margin: auto;
+                margin-top: 4px;
+                font-family: 'Lato';
+                color: #1865F2;
+            }
+
+            .contest-tag:hover {
+                cursor: pointer;
+            }
+
+            .contest-tag.previous {
+                color: #6016F2;
+                border-color: #6016F2;
+            }
+
+            .col1 {
+                float: left;
+                clear: left;
+            }
+
+            .col2 {
+                float: right;
+                clear: right;
+            }
+
+            .new {
+                justify-content: center;
+                align-items: center;
+                display: flex;
+            }
+
+            .contest-add {
+                position: absolute;
+                background-color: #3D80F2;
+                border-radius: 5px;
+            }
+
+            .contest-box:hover .contest-add {
+                background-color: #333;
+            }
+
+            .contest-info {
+                background-color: white;
+                color: black;
+                margin: auto;
+                margin-top: 10px;
+                padding-bottom: 15px;
+                padding-top: 10px;
+                width: 85%;
+                text-align: left;
+                border-radius: 5px;
+                border: 1px solid lightgrey;
+            }
+
+            .contest-info h3 {
+                font-family: 'Lato';
+                width: 80%;
+                padding: 10px;
+                margin-left: 20px;
+            }
+
+            .contest-info p {
+                font-family: 'Montserrat';
+                line-height: 1.5em;
+            }
+
+            .contest-link {
+                font-family: 'Montserrat';
+                text-decoration: none;
+                margin-left: 30px;
+                color: #1865F2;
+            }
+
+            .contest-description {
+                margin-left: 30px;
+                margin-right: 30px;
+                margin-bottom: 30px;
+            }
+
+            .result-heading {
+                margin-top: 40px;
+                padding: 10px 0px;
+            }
+
+            .results {
+                background-color: white;
+                color: black;
+                width: 85%;
+                margin: auto;
+                margin-top: 15px;
+                margin-bottom: 30px;
+                border-radius: 5px;
+                font-family: "Montserrat", serif;
+                padding-bottom: 15px;
+                border: 1px solid lightgrey;
+            }
+
+            .results h3 {
+                font-family: 'Lato', serif;
+                margin: auto;
+                text-align: center;
+                margin-top: 15px;
+            }
+
+            .winner-box {
+                width: 80%;
+                margin: auto;
+                margin-top: 50px;
+                text-align: left;
+            }
+
+            .winning-program img, .winning-program-old img {
+                height: 124px;
+                width: 124px;
+                border: 1px solid lightgrey;
+            }
+
+            .image-container {
+                width: 126px;
+                float: left;
+                margin-right: 15px;
+            }
+
+            .winning-program {
+                padding: 60px 0px;
+                padding: 60px 0px;
+                padding-top: 25px;
+                margin-bottom: 20px;
+                border-top: 2px solid rgb(217, 217, 217);
+                text-align: left;
+                font-size: 18px;
+                font-family: 'Montserrat', serif;
+                padding-bottom: 0px;
+                line-height: 1.7em;
+            }
+
+            .winning-program p {
+                font-family: 'Montserrat', serif;
+                line-height: 1.7em;
+                font-size: 18px;
+            }
+
+            .winning-program-old {
+                list-style: none;
+                padding: 60px 0px;
+                padding: 60px 0px;
+                padding-top: 25px;
+                margin-bottom: 20px;
+                border-top: 2px solid rgb(217, 217, 217);
+                text-align: left;
+                font-size: 18px;
+                font-family: 'Montserrat', serif;
+                padding-bottom: 22%;
+            }
+
+            .bold-top {
+                border-top: 2px solid black;
+            }
+
+            .explanation {
+                clear: both;
+                margin-top: 20%;
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            .faq-container {
+                background-color: white;
+                margin: auto;
+                margin-bottom: 15px;
+                width: 85%;
+                border-radius: 5px;
+                border: 1px solid lightgrey;
+            }
+
+            .faq-box {
+                margin: auto;
+                margin-top: 10px;
+                margin-bottom: 10px;
+                padding-top: 10px;
+                color: black;
+                line-height: 1.5em;
+            }
+
+            .faq-box h3 {
+                font-family: 'Lato';
+                text-align: left;
+                padding: 0px 10px;
+            }
+
+            .faq-box p {
+                font-family: 'Montserrat';
+                text-align: left;
+                padding: 10px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid rgb(217, 217, 217);
+            }
+
+            .faq-box:last-child p {
+                border: none;
+            }
+
+            .faq-box:first-child h3 {
+                margin-top: 10px;
+            }
+
+            .info-box {
+                box-sizing: border-box;
+                width: 85%;
+                margin: auto;
+                margin-bottom: 20px;
+                padding: 15px;
+                font-family: 'Montserrat';
+                font-size: 16px;
+                text-align: left;
+                background-color: white;
+                color: black;
+                border-radius: 5px;
+                border: 1px solid lightgrey;
+            }
+
+            .members-content {
+                width: 80%;
+            }
+
+            .members-board {
+                width: 85%;
+                margin: auto;
+            }
+
+            .member-box {
+                margin: auto;
+                margin-bottom: 20px;
+                width: 44%;
+                height: 250px;
+                background-color: white;
+                color: black;
+                font-family: 'Lato';
+                font-size: 24px;
+                padding: 10px;
+                border-radius: 5px;
+                border: 1px solid lightgrey;
+            }
+
+            .member-box:hover {
+                border: 1px solid #21242C;
+                cursor: pointer;
+            }
+
+            .member-info {
+                margin: auto;
+            }
+
+
+            .link-editable {
+                background: rgba(255, 255, 255, 0.75);
+            }
+
+            .unselectable {
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+
+        </style>
+    </head>
+
+    <body>
+
+        <div class="content" style="padding-top:37px;">
+            <h1 class="heading" style="color:white">Contest Editor</h1>
+        </div>
+        <div id="contests-content" class="content">
+            <div id="contest-board"></div>
+        </div>
+
+        <div id="contest" class="content">
+        </div>
+
+    </body>
+
+    <script>
+        // Startup
+        var body = document.querySelector("body");
+        body.style.overflowY = "scroll";
+        document.body.scrollTop = document.documentElement.scrollTop = 0;
+    </script>
+
+    <script>
+        var contestBoard = document.getElementById("contest-board");
+        var box = document.getElementById("contest");
+
+        // Convert the date from YYYY/MM/DD to MONTH DAY, YEAR
+        function dateConversion(date) {
+            date = new Date(date);
+            return date.toLocaleString('default', { month: 'long' }) + " " + date.getDate() + ", " + date.getFullYear();
+        };
+
+        function createContest() {
+            deadline = contest[0].deadline;
+            title = contest[0].title;
+            description = contest[0].description.replace(/<\/p><p>/g, "<br><br>").replace(/<p>|<\/p>/g, "");
+            isCurrent = contest[0].isCurrent;
+
+            if (isCurrent) {
+                type = " current-contest";
+            } else {
+                type = "";
+            }
+
+            // Create the contest box elements
+            divTag = document.createElement("div");
+            divTag.id = "contest";
+            divTag.className = "contest-box" + type;
+
+            titleTag = document.createElement("div");
+            titleTag.id = "contest title"
+            titleTag.setAttribute("spellcheck", "false");
+            titleTag.setAttribute("original", title);
+            titleTag.setAttribute("style", "font-weight:bold;")
+            titleTag.innerHTML = "<b>" + title + "</b>";
+            divTag.appendChild(titleTag);
+
+            var quillTitleTag = new Quill(titleTag);
+            quillTitleTag.on('text-change', function(delta, oldDelta, source) {
+                element = quillTitleTag.container.childNodes[0].childNodes[0];
+                parentContainer = quillTitleTag.container;
+
+                if (element.innerText != parentContainer.attributes.original.value) {
+                    element.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
+                } else {
+                    element.removeAttribute("style");
+                }
+
+                contest[0].title = element.innerText;
+                document.getElementById("contest-content title").innerText = element.innerText;
+            });
+            quillTitleTag.container.childNodes[0].style.textAlign = "center";
+            quillTitleTag.container.childNodes[0].style.fontSize = "14px";
+
+            // Image
+
+            imageTag = document.createElement("img");
+            imageTag.id = "contest image";
+            imageTag.src = contest[0].link + "/latest.png";
+
+            imageContainer = document.createElement("div");
+            imageContainer.id = "contest image-container";
+            imageContainer.setAttribute("spellcheck", "false");
+            imageContainer.setAttribute("original", contest[0].link + "/latest.png");
+            imageContainer.appendChild(imageTag);
+            divTag.appendChild(imageContainer);
+
+            var quillImageTag = new Quill(imageContainer);
+            quillImageTag.on('text-change', function(delta, oldDelta, source) {
+                parentContainer = quillImageTag.container;
+                element = parentContainer.childNodes[0].childNodes[0];
+
+                // Verify that only one node exists and it is an image tag
+                if (element.childNodes.length == 1 && element.childNodes[0].nodeName == "IMG") {
+                    src = element.childNodes[0].src;
+
+                    contest[0].link = src.split("/").slice(0, -1).join("/");
+
+                    // Check if image is different from original
+                    if (src != parentContainer.attributes.original.value) {
+                        element.parentNode.parentNode.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
+                    } else {
+                        element.parentNode.parentNode.removeAttribute("style");
+                    }
+                }
+
+                // Prevent any other content
+                element.parentNode.innerHTML = "<p><img src=\"" + contest[0].link + "/latest.png\"></p>";
+
+                document.getElementById("contest-content link").href = contest[0].link;
+
+            });
+            quillImageTag.container.childNodes[0].style.display = "flex";
+            quillImageTag.container.childNodes[0].style.justifyContent = "center";
+
+            spanTag = document.createElement("span");
+            spanTag.className = "contest-tag unselectable";
+            spanTag.innerHTML = "CURRENT CONTEST";
+            spanTag.onclick = function(element) {
+                element = element.target;
+
+                element.classList.toggle("previous");
+                element.innerHTML = (!Array.from(element.classList).includes("previous") ? "CURRENT CONTEST" : "PREVIOUS CONTEST");
+                contest[0].isCurrent = !contest[0].isCurrent;
+
+                document.getElementById("contest").classList.toggle("current-contest");
+            };
+
+            if (!isCurrent) {
+                spanTag.classList.toggle("previous");
+                spanTag.innerHTML = (!Array.from(spanTag.classList).includes("previous") ? "CURRENT CONTEST" : "PREVIOUS CONTEST");
+            }
+
+            divTag.appendChild(spanTag);
+
+            contestBoard.prepend(divTag);
+
+            // Create the contest content elements
+            containerTag = document.createElement("div");
+            containerTag.id = "contest-content";
+
+            title2Tag = document.createElement("h1");
+            title2Tag.id = "contest-content title"
+            title2Tag.className = "heading";
+            title2Tag.innerHTML = title;
+            containerTag.appendChild(title2Tag);
+
+            divTag = document.createElement("div");
+            divTag.className = "contest-info";
+
+            h3Tag = document.createElement("h3");
+            h3Tag.innerHTML = "Description";
+            h3Tag.style = "display: inline-block;width: unset;";
+
+            buttonTag = document.createElement("button");
+            buttonTag.innerHTML = "Convert HTML to text";
+            buttonTag.onclick = function() {
+                descriptionTag.childNodes[0].innerHTML = descriptionTag.childNodes[0].textContent.replace(/<br><br>/g, "<br>");
+            };
+
+            divTag.appendChild(h3Tag);
+            divTag.appendChild(buttonTag);
+
+            descriptionTag = document.createElement("div");
+            descriptionTag.id = "contest-content description";
+            descriptionTag.className = "contest-description";
+            descriptionTag.setAttribute("original", description);
+            descriptionTag.innerHTML = description;
+            divTag.appendChild(descriptionTag);
+
+            var quillDescription = new Quill(descriptionTag, {
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'link']
+                    ]
+                },
+                theme: 'bubble'
+            });
+            quillDescription.on('text-change', function(delta, oldDelta, source) {
+                element = quillDescription.container.childNodes[0];
+                parentContainer = quillDescription.container;
+
+                elementHTML = element.innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/<\/p><p><br><\/p><p>/g, "<br><br>");
+
+                if (elementHTML.slice(3, -4) != parentContainer.attributes.original.value) {
+                    element.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
+                } else {
+                    element.removeAttribute("style");
+                }
+
+                contest[0].description = elementHTML.replace(/<br><br>/g, "</p><p>");
+            });
+
+            h3Tag = document.createElement("h3");
+            h3Tag.innerHTML = "Deadline";
+            divTag.appendChild(h3Tag);
+
+            pTag = document.createElement("p");
+            pTag.innerHTML = "All projects must be submitted by <span id='dateReal'>" + deadline + "</span>.<br><br>";
+            pTag.style = "margin-left: 30px;margin-bottom: 30px;";
+
+            dateTag = document.createElement("input");
+            dateTag.id = "contest-content deadline"
+            dateTag.type = "date";
+            dateTag.setAttribute("original", new Date(deadline).toISOString().split('T')[0]);
+            dateTag.setAttribute("value", new Date(deadline).toISOString().split('T')[0]);
+            dateTag.oninput = function() {
+                element = document.getElementById("contest-content deadline");
+                dTag = document.getElementById("dateReal");
+
+                if (element.value && element.value != element.attributes.original.value) {
+                    element.style.color = "rgba(255, 125, 0)";
+                    dTag.style.color = "rgba(255, 125, 0)";
+                } else {
+                    element.removeAttribute("style");
+                    dTag.removeAttribute("style");
+                }
+
+                if (element.value) {
+                    contest[0].deadline = dateConversion(element.value);
+                    document.getElementById("dateReal").innerText = dateConversion(element.value);
+                }
+            };
+            pTag.appendChild(dateTag);
+
+            buttonTag = document.createElement("button");
+            buttonTag.setAttribute("style", "margin-left: 10px")
+            buttonTag.innerHTML = "Reset date";
+            buttonTag.onclick = function() {
+                element = document.getElementById("contest-content deadline");
+
+                element.value = element.attributes.original.value;
+                element.removeAttribute("style");
+                dTag.removeAttribute("style");
+                contest[0].deadline = dateConversion(element.value);
+                document.getElementById("dateReal").innerText = dateConversion(element.value);
+            };
+
+            pTag.appendChild(buttonTag);
+            divTag.appendChild(pTag);
+
+            contestLinkTag = document.createElement("a");
+            contestLinkTag.id = "contest-content link"
+            contestLinkTag.className = "contest-link";
+            contestLinkTag.setAttribute("target", "_blank");
+            contestLinkTag.href = contest[0].link;
+            contestLinkTag.innerHTML = "View contest page and submit your entry here.";
+            divTag.appendChild(contestLinkTag);
+
+            containerTag.appendChild(divTag);
+            box.prepend(containerTag);
+
+            showContest();
+        };
+
+        createContest();
+
+        function checkChanges(element) {
+            quill = Quill.find(element)
+            quill.on('text-change', function(delta, oldDelta, source) {
+                element = quill.container.childNodes[0].childNodes[0];
+                parentContainer = quill.container;
+
+                element.parentNode.parentNode.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
+                // Verify that only one node exists and it is an image tag
+                if (element.childNodes.length == 1 && element.childNodes[0].nodeName == "IMG") {
+                    src = element.childNodes[0].src;
+
+                    // Check if image is different from original
+                    if (src != parentContainer.attributes.original.value) {
+                        element.parentNode.parentNode.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
+                    } else {
+                        element.parentNode.parentNode.removeAttribute("style");
+                    }
+                }
+            });
+        }
+
+        function resultImage(editor) {
+            parentContainer = editor.container;
+            element = parentContainer.childNodes[0].childNodes[0];
+            resultid = parentContainer.attributes.resultid.value.split("-");
+            result = contest[0].results[resultid[0]][parseInt(resultid[1])];
+
+            title = document.getElementById("contest-results " + parentContainer.id.split(" ")[1] + " projectTitle");
+            author = document.getElementById("contest-results " + parentContainer.id.split(" ")[1] + " author");
+
+            // Verify that only one node exists and it is an image tag
+            if (element.childNodes.length == 1 && element.childNodes[0].nodeName == "IMG") {
+                src = element.childNodes[0].src;
+
+                result.link = src.split("/").slice(0, -1).join("/");
+
+                if (result.link !== "welcome-to-contests/5745407636209664") {
+                    $.getJSON("https://www.khanacademy.org/api/labs/scratchpads/" + result.link.split("/").slice(-1)[0] + "?callback=?", function(apidata) {
+                        result.title = apidata.title;
+                        result.authorKaid = apidata.kaid;
+                        $.getJSON("https://www.khanacademy.org/api/internal/user/profile?kaid=" + apidata.kaid + "&callback=?", function(apidata2) {
+                            result.authorName = apidata2.nickname;
+
+                            title.className = "";
+                            author.className = "";
+
+                            title.innerText = result.title;
+                            title.href = result.link;
+                            author.innerText = result.authorName;
+                            author.href = "https://www.khanacademy.org/profile/" + result.authorKaid;
+                        });
+                    });
+                } else {
+                    result.title = "";
+                    result.authorKaid = "";
+                    result.authorName = "";
+                    title.innerHTML = "&nbsp;";
+                    title.href = "";
+                    author.innerHTML = "&nbsp;";
+                    author.href = "";
+
+                    title.className = "disabled";
+                    author.className = "disabled";
+                }
+
+                // Check if image is different from original
+                if (src != parentContainer.attributes.original.value) {
+                    element.parentNode.parentNode.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
+                } else {
+                    element.parentNode.parentNode.removeAttribute("style");
+                }
+            }
+
+            // Prevent any other content
+            element.parentNode.innerHTML = "<p><img src=\"" + result.link + "/latest.png" + "\"></p>";
+
+            // If template, then set link to nothing
+            if (result.link == "welcome-to-contests/5745407636209664") {
+                result.link = "";
+            }
+        };
+
+        function resultDesc(editor) {
+            parentContainer = editor.container;
+            element = parentContainer.childNodes[0].childNodes[0];
+            resultid = parentContainer.attributes.resultid.value.split("-");
+            result = contest[0].results[resultid[0]][parseInt(resultid[1])];
+
+            elementHTML = element.innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/<\/p><p><br><\/p><p>/g, "<br><br>");
+
+            if (elementHTML != parentContainer.attributes.original.value) {
+                element.style.backgroundColor = "rgba(255, 205, 0, 0.85)";
+            } else {
+                element.removeAttribute("style");
+            }
+
+            if (elementHTML != ". . .") {
+                result.explanation = elementHTML;
+            } else {
+                result.explanation = "";
+            }
+        }
+
+        function showContest() {
+            var editors = [];
+            program = 0;
+
+            h2Tag = document.createElement("h2");
+            h2Tag.className = "result-heading heading";
+            h2Tag.innerHTML = "Results";
+            box.appendChild(h2Tag);
+
+            divTag = document.createElement("div");
+            divTag.className = "results";
+
+            div2Tag = document.createElement("div");
+            div2Tag.className = "winner-box";
+
+            box.appendChild(divTag);
+
+            // Loop through three skill categories
+            for (var category = 0; category < 3; category++) {
+                var winners = Object.values(contest[0].results)[category];
+                var categoryName = Object.keys(contest[0].results)[category];
+
+                h3Tag = document.createElement("h3");
+                h3Tag.innerHTML = (categoryName[0].toUpperCase() + categoryName.slice(1)) + " Bracket";
+                div2Tag.appendChild(h3Tag);
+
+                // Loop through three entries per category
+                for (var entries = 0; entries < winners.length; entries++) {
+                    winnerClassName = "winning-program";
+
+                    if (entries == 0) {
+                        winnerClassName = winnerClassName + " bold-top";
+                    };
+
+                    div3Tag = document.createElement("div");
+                    div3Tag.className = winnerClassName;
+
+                    image2Tag = document.createElement("img");
+                    if (winners[entries].link) {
+                        image2Tag.src = winners[entries].link + "/latest.png";
+                    } else {
+                        image2Tag.src = "https://www.khanacademy.org/computer-programming/welcome-to-contests/5745407636209664/latest.png";
+                    }
+
+                    image2Container = document.createElement("div");
+                    image2Container.id = "contest-results " + program + " image-container";
+                    image2Container.className = "image-container"
+                    image2Container.setAttribute("spellcheck", "false");
+                    if (winners[entries].link) {
+                        image2Container.setAttribute("original", winners[entries].link + "/latest.png");
+                    } else {
+                        image2Container.setAttribute("original", "https://www.khanacademy.org/computer-programming/welcome-to-contests/5745407636209664/latest.png");
+                    }
+                    image2Container.setAttribute("resultid", categoryName + "-" + entries);
+
+                    image2Container.appendChild(image2Tag);
+                    div3Tag.appendChild(image2Container);
+
+                    pTag = document.createElement("p");
+
+                    aTag = document.createElement("a");
+                    aTag.id = "contest-results " + program + " projectTitle";
+                    if (!winners[entries].link) {
+                        aTag.className = "disabled";
+                    }
+                    aTag.href = winners[entries].link;
+                    aTag.target = "_blank";
+                    aTag.innerHTML = winners[entries].title || "&nbsp;";
+                    pTag.appendChild(aTag);
+
+                    div3Tag.appendChild(pTag);
+
+                    pTag = document.createElement("p");
+                    pTag.innerHTML = "<strong>Created By:</strong> ";
+
+                    aTag = document.createElement("a");
+                    aTag.id = "contest-results " + program + " author";
+                    if (!winners[entries].link) {
+                        aTag.className = "disabled";
+                    }
+                    aTag.href = "https://www.khanacademy.org/profile/" + winners[entries].authorKaid;
+                    aTag.target = "_blank";
+                    aTag.innerHTML = winners[entries].authorName || "&nbsp;";
+                    pTag.appendChild(aTag);
+
+                    div3Tag.appendChild(pTag);
+
+                    pTag = document.createElement("p");
+                    pTag.className = "explanation";
+                    pTag.innerHTML = "<strong>Comments from the judges: </strong><br>";
+
+                    explanationTag = document.createElement("div");
+                    explanationTag.id = "contest-results " + program + " description";
+                    explanationTag.style = "font-size:18px;font-family:'Montserrat', serif;line-height:1.7em";
+                    explanationTag.setAttribute("original", winners[entries].explanation || ". . .");
+                    explanationTag.innerHTML = winners[entries].explanation || ". . .";
+                    explanationTag.setAttribute("resultid", categoryName + "-" + entries);
+                    pTag.appendChild(explanationTag);
+
+                    div3Tag.appendChild(pTag);
+                    div2Tag.appendChild(div3Tag);
+
+                    program += 1;
+                };
+            };
+            divTag.appendChild(div2Tag);
+
+            // Inefficient; need to find another method
+            quillResult0Img = new Quill(document.getElementById("contest-results 0 image-container"))
+            quillResult0Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult0Img) });
+            quillResult0Desc = new Quill(document.getElementById("contest-results 0 description"))
+            quillResult0Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult0Desc) });
+
+            quillResult1Img = new Quill(document.getElementById("contest-results 1 image-container"))
+            quillResult1Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult1Img) });
+            quillResult1Desc = new Quill(document.getElementById("contest-results 1 description"))
+            quillResult1Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult1Desc) });
+
+            quillResult2Img = new Quill(document.getElementById("contest-results 2 image-container"))
+            quillResult2Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult2Img) });
+            quillResult2Desc = new Quill(document.getElementById("contest-results 2 description"))
+            quillResult2Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult2Desc) });
+
+            quillResult3Img = new Quill(document.getElementById("contest-results 3 image-container"))
+            quillResult3Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult3Img) });
+            quillResult3Desc = new Quill(document.getElementById("contest-results 3 description"))
+            quillResult3Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult3Desc) });
+
+            quillResult4Img = new Quill(document.getElementById("contest-results 4 image-container"))
+            quillResult4Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult4Img) });
+            quillResult4Desc = new Quill(document.getElementById("contest-results 4 description"))
+            quillResult4Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult4Desc) });
+
+            quillResult5Img = new Quill(document.getElementById("contest-results 5 image-container"))
+            quillResult5Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult5Img) });
+            quillResult5Desc = new Quill(document.getElementById("contest-results 5 description"))
+            quillResult5Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult5Desc) });
+
+            quillResult6Img = new Quill(document.getElementById("contest-results 6 image-container"))
+            quillResult6Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult6Img) });
+            quillResult6Desc = new Quill(document.getElementById("contest-results 6 description"))
+            quillResult6Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult6Desc) });
+
+            quillResult7Img = new Quill(document.getElementById("contest-results 7 image-container"))
+            quillResult7Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult7Img) });
+            quillResult7Desc = new Quill(document.getElementById("contest-results 7 description"))
+            quillResult7Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult7Desc) });
+
+            quillResult8Img = new Quill(document.getElementById("contest-results 8 image-container"))
+            quillResult8Img.on('text-change', function(delta, oldDelta, source) { resultImage(quillResult8Img) });
+            quillResult8Desc = new Quill(document.getElementById("contest-results 8 description"))
+            quillResult8Desc.on('text-change', function(delta, oldDelta, source) { resultDesc(quillResult8Desc) });
+        };
+
+        buttonTag = document.createElement("button");
+        buttonTag.innerHTML = "Log contest data in console";
+        buttonTag.style = "width:100%; height: 50px; margin-bottom: 20px"
+        buttonTag.onclick = function() {
+            console.clear();
+            console.log(JSON.stringify(contest[0], null, 4).replace(/"([^"]+)":/g, '$1:'));
+        };
+        body.appendChild(buttonTag)
+
+    </script>
+</html>
