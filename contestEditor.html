@@ -36,6 +36,7 @@ console using the button at the bottom of the webpage.
 
 // Paste contest data here!
 var contest = [
+//START
 {
     title: "Bird Seed Factory",
     link: "https://www.khanacademy.org/computer-programming/contest-bird-seed-factory/4894927375515648",
@@ -117,6 +118,7 @@ var contest = [
         ]
     }
 }
+//END
 ]
 
     </script>
@@ -746,7 +748,6 @@ var contest = [
             deadline = contest[0].deadline;
             title = contest[0].title;
             description = contest[0].description.replace(/<\/p><p>/g, "<br><br>").replace(/<p>|<\/p>/g, "");
-            image = contest[0].link + "/" + contest[0].imageFile;
             isCurrent = contest[0].isCurrent;
 
             if (isCurrent) {
@@ -789,12 +790,12 @@ var contest = [
 
             imageTag = document.createElement("img");
             imageTag.id = "contest image";
-            imageTag.src = image;
+            imageTag.src = contest[0].link + "/latest.png";
 
             imageContainer = document.createElement("div");
             imageContainer.id = "contest image-container";
             imageContainer.setAttribute("spellcheck", "false");
-            imageContainer.setAttribute("original", image);
+            imageContainer.setAttribute("original", contest[0].link + "/latest.png");
             imageContainer.appendChild(imageTag);
             divTag.appendChild(imageContainer);
 
@@ -808,7 +809,6 @@ var contest = [
                     src = element.childNodes[0].src;
 
                     contest[0].link = src.split("/").slice(0, -1).join("/");
-                    contest[0].imageFile = src.split("/").slice(-1)[0];
 
                     // Check if image is different from original
                     if (src != parentContainer.attributes.original.value) {
@@ -819,7 +819,7 @@ var contest = [
                 }
 
                 // Prevent any other content
-                element.parentNode.innerHTML = "<p><img src=\"" + contest[0].link + "/" + contest[0].imageFile + "\"></p>";
+                element.parentNode.innerHTML = "<p><img src=\"" + contest[0].link + "/latest.png\"></p>";
 
                 document.getElementById("contest-content link").href = contest[0].link;
 
